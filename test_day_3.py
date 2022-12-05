@@ -1,6 +1,4 @@
-import pytest
-
-from day_3 import priority, duplicate_char
+from day_3 import priority, duplicate_char, find_badge
 
 
 def test_priority():
@@ -11,6 +9,7 @@ def test_priority():
     assert priority("t") == 20
     assert priority("s") == 19
 
+
 def test_find_duplicate_item():
     assert duplicate_char("vJrwpWtwJgWrhcsFMMfFFhFp") == "p"
     assert duplicate_char("jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL") == "L"
@@ -20,6 +19,11 @@ def test_find_duplicate_item():
     assert duplicate_char("CrZsJsPPZsGzwwsLwLmpwMDw") == "s"
 
 
+def test_find_badge():
+    assert find_badge("vJrwpWtwJgWrhcsFMMfFFhFp",
+                      "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL",
+                      "PmmdzqPrVvPwwTWBwg") == "r"
 
-
-
+    assert find_badge("wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn",
+                      "ttgJtRGJQctTZtZT",
+                      "CrZsJsPPZsGzwwsLwLmpwMDw") == "Z"
