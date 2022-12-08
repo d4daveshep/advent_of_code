@@ -75,4 +75,59 @@ def test_dir_tree(data):
     pass
 
 
+class DirNode(Node):
+    pass
+
+class FileNode(Node):
+    size: int = 0
+
+
+def calc_space_used(root: DirNode) -> int:
+    total = 0
+    for child in root.children:
+        if isinstance(child, FileNode):
+            total += child.size
+        if isinstance(child, DirNode):
+            total += calc_space_used(child)
+
+    return total
+
+
+def test_anytree():
+    root = DirNode("root", parent=None)
+
+    # build root level
+    dir_a = DirNode("a", parent=root)
+    file_b = FileNode("b.txt", parent=root)
+    file_b.size = 14848514
+    file_c = FileNode("c.txt", parent=root)
+    file_c.size = 8504156
+    dir_d = DirNode("d", parent=root)
+
+    assert calc_space_used(root) == file_b.size + file_c.size
+
+    # build dir_a
+    dir_e = DirNode("e", parent=dir_a)
+    file_f = FileNode("f", parent=dir_a)
+    file_f.size = 29116
+    file_g = FileNode("g", parent=dir_a)
+    file_g.size = 2557
+    file_h = FileNode("h.lst", parent=dir_a)
+    file_h.size = 62596
+
+    assert calc_space_used(dir_a) == sum([file_f.size, file_g.size, file_h.size])
+    assert calc_space_used(root) == sum([file_b.size, file_c.size, file_f.size, file_g.size, file_h.size])
+
+    # build dir_e
+    file_i = FileNode("i", parent=dir_e)
+    file_i.size = 584
+
+    assert calc_space_used(dir_e) == file_i.size
+    assert calc_space_used(dir_a) == sum([file_f.size, file_g.size, file_h.size, file_i.size])
+    assert calc_space_used(root) == sum([file_b.size, file_c.size, file_f.size, file_g.size, file_h.size, file_i.size])
+
+
+
+
+
 
