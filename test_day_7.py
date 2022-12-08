@@ -16,6 +16,12 @@ class Command:
     to_dir = ""
 
 class Output:
+    def __init__(self):
+        self.name = ""
+        self.dir = False
+        self.file = False
+        self.size = 0
+
     pass
 
 
@@ -35,10 +41,12 @@ def parse_command(line_items: list) -> Command:
 def parse_output(line_items: list) -> Output:
     output = Output()
     if line_items[0] == "dir":
-        output.dir_name = line_items[1]
+        output.dir = True
+        output.name = line_items[1]
     elif line_items[0].isnumeric():
-        output.file_size = int(line_items[0])
-        output.file_name = line_items[1]
+        output.file = True
+        output.size = int(line_items[0])
+        output.name = line_items[1]
     else:
         assert False, f"unknown output: {line_items}"
 
@@ -138,6 +146,52 @@ def test_anytree():
 
     assert calc_space_used(dir_d) == sum([file_j.size, file_d_ext.size, file_d_log.size, file_k.size])
     assert calc_space_used(root) == 48381165
+
+
+def parse_line(line:str):
+    obj = None
+    line_items = line.split()
+    if line_items[0] == "$":
+        obj = parse_command(line_items[1:])
+    else:
+        obj = parse_output(line_items)
+
+    return obj
+
+
+
+def test_parse_cd_line():
+    data_obj = parse_line("$ cd /")
+    assert isinstance(data_obj, Command)
+    assert data_obj.cd
+    assert data_obj.to_dir == "/"
+    assert not data_obj.ls
+
+def test_parse_ls_line():
+    data_obj = parse_line("$ ls")
+    assert isinstance(data_obj, Command)
+    assert not data_obj.cd
+    assert data_obj.ls
+
+def test_parse_ls_dir_output():
+    data_obj = parse_line("dir a")
+    assert isinstance(data_obj, Output)
+    assert data_obj.dir
+    assert data_obj.name == "a"
+
+def test_parse_ls_file_output():
+    data_obj = parse_line("14848514 b.txt")
+    assert isinstance(data_obj, Output)
+    assert data_obj.file
+    assert not data_obj.dir
+    assert data_obj.name == "b.txt"
+    assert data_obj.size == 14848514
+
+def test_build_dir_tree_from_file(data):
+    for line in data:
+        data_obj = parse_line(line)
+
+
 
 
 
