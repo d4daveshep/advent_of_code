@@ -126,6 +126,18 @@ def test_anytree():
     assert calc_space_used(dir_a) == sum([file_f.size, file_g.size, file_h.size, file_i.size])
     assert calc_space_used(root) == sum([file_b.size, file_c.size, file_f.size, file_g.size, file_h.size, file_i.size])
 
+    # build dir_d
+    file_j = FileNode("j", parent=dir_d)
+    file_j.size = 4060174
+    file_d_log = FileNode("d.log", parent=dir_d)
+    file_d_log.size=8033020
+    file_d_ext = FileNode("k", parent=dir_d)
+    file_d_ext.size=5626152
+    file_k = FileNode("k", parent=dir_d)
+    file_k.size=7214296
+
+    assert calc_space_used(dir_d) == sum([file_j.size, file_d_ext.size, file_d_log.size, file_k.size])
+    assert calc_space_used(root) == 48381165
 
 
 
