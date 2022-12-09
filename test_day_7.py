@@ -1,5 +1,5 @@
 import pytest
-from anytree import Node
+from anytree import Node, find, RenderTree, AsciiStyle
 
 
 @pytest.fixture()
@@ -13,6 +13,7 @@ def data():
 class Command:
     cd = False
     ls = False
+    cd_up = False
     to_dir = ""
 
 class Output:
@@ -30,6 +31,8 @@ def parse_command(line_items: list) -> Command:
     if line_items[0] == "cd":
         command.cd = True
         command.to_dir = line_items[1]
+        if command.to_dir == "..":
+            command.cd_up = True
     elif line_items[0] == "ls":
         command.ls = True
     else:
@@ -84,7 +87,13 @@ def test_dir_tree(data):
 
 
 class DirNode(Node):
-    pass
+    def find(self, sub_dir:str) -> Node:
+        for child in self.children:
+            if isinstance(child, DirNode) and child.name == sub_dir:
+                return child
+
+        else:
+            raise Exception(f"can't find sub-dir '{sub_dir}' in {self.children}")
 
 class FileNode(Node):
     size: int = 0
@@ -187,9 +196,42 @@ def test_parse_ls_file_output():
     assert data_obj.name == "b.txt"
     assert data_obj.size == 14848514
 
-def test_build_dir_tree_from_file(data):
+
+def build_tree(data):
+    root_node = None
+    cur_dir = None
     for line in data:
-        data_obj = parse_line(line)
+        obj = parse_line(line)
+        if isinstance(obj, Command):
+            if obj.cd:
+                if obj.cd_up:
+                    cur_dir = cur_dir.parent
+                elif obj.to_dir == "/":
+                    root_node = DirNode(obj.to_dir)
+                    cur_dir = root_node
+                else:
+                    cur_dir = cur_dir.find(obj.to_dir)
+            elif obj.ls:
+                pass
+        elif isinstance(obj, Output):
+            if obj.dir:
+                new_dir = DirNode(obj.name, parent=cur_dir)
+            elif obj.file:
+                new_file = FileNode(obj.name, parent=cur_dir)
+                new_file.size = obj.size
+
+    return root_node
+
+
+
+
+def test_build_dir_tree_from_file(data):
+    root_node = build_tree(data)
+    # print(RenderTree(root_node, style=AsciiStyle()).by_attr())
+    assert len(root_node.children) == 4
+    assert calc_space_used(root_node) == 48381165
+
+
 
 
 
