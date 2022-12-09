@@ -1,6 +1,9 @@
 import pytest
 from anytree import Node, PreOrderIter
 
+from day_7 import parse_command, parse_output, DirNode, FileNode, calc_space_used, parse_line, Command, Output, \
+    build_tree, calc_total_dir_space_under_100k, calc_space_to_free
+
 
 @pytest.fixture()
 def data():
@@ -136,3 +139,11 @@ def test_build_dir_tree_from_file(data):
 def test_total_sizes_under_100k(data):
     root_node = build_tree(data)
     assert calc_total_dir_space_under_100k(root_node) == 95437
+
+
+
+
+def test_calc_space_to_free(data):
+    root_node = build_tree(data)
+    assert calc_space_to_free(root_node) == 24933642
+

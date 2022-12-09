@@ -136,15 +136,26 @@ def solve_part_1(data: str) -> int:
     return total
 
 
-def solve_part_2(data: str) -> int:
-    root_node = build_tree(data)
+def calc_space_to_free(root_node):
     total_space_available = 70000000
     space_used = calc_space_used(root_node)
     unused_space = total_space_available - space_used
     space_to_find = 30000000 - unused_space
 
-    # walk the tree, find space closest but under space_to_find
+    smallest_space = 30000000
+    for node in PreOrderIter(root_node):
+        if isinstance(node, DirNode):
+            space = calc_space_used(node)
+            if space > space_to_find:
+                smallest_space = min([space, smallest_space])
 
+    return smallest_space
+
+
+def solve_part_2(data: str) -> int:
+    root_node = build_tree(data)
+    smallest_space = calc_space_to_free(root_node)
+    return smallest_space
 
 
 
