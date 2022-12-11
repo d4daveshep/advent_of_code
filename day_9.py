@@ -106,6 +106,7 @@ class Rope:
             self.move_head(move_map[dir])
 
 
+
 def parse(puzzle_input: str) -> list:
     return puzzle_input.split('\n')
 
