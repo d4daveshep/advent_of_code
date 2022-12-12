@@ -9,6 +9,12 @@ def data() -> list:
         data = data_file.readlines()
     return data
 
+@pytest.fixture()
+def data_2() -> list:
+    with open("./day_9_2_data.txt") as data_file:
+        data = data_file.readlines()
+    return data
+
 
 def test_move_up():
     head = Point(0, 0)
@@ -108,8 +114,8 @@ def test_close_gap():
     rope = Rope(head=Point(2, 2), tail=Point(1, 0))
     assert not rope.tail_is_adjacent_to_head()
     assert rope.gap_tail_to_head() == Vector(1, 2)
-    rope.close_gap()
-    # assert rope.tail == Point(2,1)
+    rope.close_gap(rope.head, rope.tail)
+    assert rope.tail == Point(2, 1)
 
 
 def test_data_moves(data):
@@ -133,4 +139,41 @@ def test_10_knot_rope():
     rope = Rope(knots=10)
     assert rope.num_knots == 10
     for i in range(rope.num_knots):
-        assert rope.knot[i] == Point(0,0)
+        assert rope.knot[i] == Point(0, 0)
+
+
+def test_10kt_rope_moves():
+    rope = Rope(knots=10)
+    rope.do_multiple_moves("R 5")
+    assert rope.head == Point(5, 0)
+    assert rope.knot[0] == Point(5, 0)
+    assert rope.knot[1] == Point(4, 0)
+    assert rope.knot[2] == Point(3, 0)
+    assert rope.knot[3] == Point(2, 0)
+    assert rope.knot[4] == Point(1, 0)
+    assert rope.knot[5] == Point(0, 0)
+    assert rope.knot[6] == Point(0, 0)
+    assert rope.knot[7] == Point(0, 0)
+    assert rope.knot[8] == Point(0, 0)
+    assert rope.tail == Point(0, 0)
+
+    rope.do_multiple_moves("U 8")
+    assert rope.head == Point(5,8)
+    assert rope.knot[1] == Point(5,7)
+    assert rope.knot[2] == Point(5,6)
+    assert rope.knot[3] == Point(5,5)
+    assert rope.knot[4] == Point(5,4)
+    assert rope.knot[5] == Point(4,4)
+    assert rope.knot[6] == Point(3,3)
+    assert rope.knot[7] == Point(2,2)
+    assert rope.knot[8] == Point(1,1)
+    assert rope.tail == Point(0,0)
+
+
+def test_data_2_moves(data_2):
+    rope = Rope(knots=10)
+    for line in data_2:
+        line = line.strip()
+        rope.do_multiple_moves(line)
+    assert rope.tail.count_unique_positions() == 36
+

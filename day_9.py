@@ -63,6 +63,9 @@ class Point:
     def store_position(self):
         self.__positions[self.__repr__()] = True
 
+    def clear_positions(self):
+        self.__positions.clear()
+
     def count_unique_positions(self) -> int:
         return len(self.__positions)
 
@@ -88,10 +91,11 @@ class Rope:
 
     def move_head(self, direction: Move):
         self.head.move(direction)
-        if self.tail_is_adjacent_to_head():
-            return
-        else:
-            self.close_gap()
+        for k in range(self.num_knots - 1):
+            if self.knot[k + 1].is_adjacent_to(self.knot[k]):
+                return
+            else:
+                self.close_gap(self.knot[k], self.knot[k + 1])
 
     def gap_tail_to_head(self) -> Vector:
         return self.tail.gap_to(self.head)
@@ -99,28 +103,31 @@ class Rope:
     def tail_is_adjacent_to_head(self) -> bool:
         return self.tail.is_adjacent_to(self.head)
 
-    def close_gap(self):
-        gap = self.gap_tail_to_head()
+    def close_gap(self, leader: Point, follower: Point):
+        gap = follower.gap_to(leader)
+        # gap = self.gap_tail_to_head()
         if gap == Vector(2, 0):
-            self.tail.move(Move.RIGHT)
+            follower.move(Move.RIGHT)
         elif gap == Vector(-2, 0):
-            self.tail.move(Move.LEFT)
+            follower.move(Move.LEFT)
         elif gap == Vector(0, 2):
-            self.tail.move(Move.UP)
+            follower.move(Move.UP)
         elif gap == Vector(0, -2):
-            self.tail.move(Move.DOWN)
-        elif gap == Vector(1, 2) or gap == Vector(2, 1):
-            self.tail.move(Move.UP, store=False)
-            self.tail.move(Move.RIGHT)
-        elif gap == Vector(1, -2) or gap == Vector(2, -1):
-            self.tail.move(Move.DOWN, store=False)
-            self.tail.move(Move.RIGHT)
-        elif gap == Vector(-1, -2) or gap == Vector(-2, -1):
-            self.tail.move(Move.DOWN, store=False)
-            self.tail.move(Move.LEFT)
-        elif gap == Vector(-1, 2) or gap == Vector(-2, 1):
-            self.tail.move(Move.UP, store=False)
-            self.tail.move(Move.LEFT)
+            follower.move(Move.DOWN)
+        elif gap == Vector(1, 2) or gap == Vector(2, 1) or gap == Vector(2, 2):
+            follower.move(Move.UP, store=False)
+            follower.move(Move.RIGHT)
+        elif gap == Vector(1, -2) or gap == Vector(2, -1) or gap == Vector(2, -2):
+            follower.move(Move.DOWN, store=False)
+            follower.move(Move.RIGHT)
+        elif gap == Vector(-1, -2) or gap == Vector(-2, -1) or gap == Vector(-2, -2):
+            follower.move(Move.DOWN, store=False)
+            follower.move(Move.LEFT)
+        elif gap == Vector(-1, 2) or gap == Vector(-2, 1) or gap == Vector(-2, 2):
+            follower.move(Move.UP, store=False)
+            follower.move(Move.LEFT)
+        else:
+            raise Exception(f"Gap too big: {gap}")
 
     def do_multiple_moves(self, dir_num: str):
         dir, num = dir_num.split()
@@ -141,7 +148,12 @@ def solve_part_1(data: list) -> int:
 
 
 def solve_part_2(data: list) -> int:
-    pass
+    rope = Rope(knots=10)
+    for line in data:
+        line = line.strip()
+        rope.do_multiple_moves(line)
+    return rope.tail.count_unique_positions()
+
 
 
 if __name__ == "__main__":
