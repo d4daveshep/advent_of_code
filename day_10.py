@@ -5,21 +5,21 @@ from aocd.models import Puzzle
 
 class Program:
     def __init__(self):
-        self.x = 1
+        self.__x = 1
         self.cycles = 0
-        self.history = {}
+        self.end_of_cycle_history = {self.cycles:self.__x}
 
     def process_instruction(self, instruction):
         data = instruction.strip().split()
         if data[0] == "noop":
             self.cycles += 1
-            self.history[self.cycles] = self.x
+            self.end_of_cycle_history[self.cycles] = self.__x
         elif data[0] == "addx":
             self.cycles += 1
-            self.history[self.cycles] = self.x
+            self.end_of_cycle_history[self.cycles] = self.__x
             self.cycles += 1
-            self.history[self.cycles] = self.x
-            self.x += int(data[1])
+            self.__x += int(data[1])
+            self.end_of_cycle_history[self.cycles] = self.__x
 
         else:
             raise Exception(f"invalid operation: {data[0]}")
@@ -28,14 +28,20 @@ class Program:
         for line in instructions:
             self.process_instruction(line)
 
-    def signal_strength(self, cycle: int) -> int:
-        return self.history[cycle] * cycle
+    def signal_strength_during_cycle(self, cycle: int) -> int:
+        return self.x_during_cycle(cycle) * cycle
 
     def sum_signal_strength(self):
         total = 0
         for cycle in range(20, 240, 40):
-            total += self.signal_strength(cycle)
+            total += self.signal_strength_during_cycle(cycle)
         return total
+
+    def x_during_cycle(self, cycle:int) -> int:
+        return self.end_of_cycle_history[cycle-1]
+
+    def x_after_cycle(self, cycle:int) -> int:
+        return self.end_of_cycle_history[cycle]
 
 
 def parse(puzzle_input: str) -> list:
