@@ -3,11 +3,33 @@ import time
 from aocd.models import Puzzle
 
 
+class Display:
+    def __init__(self):
+        self.rows = [["." for i in range(40)] for i in range(6)]
+
+    def draw_rows(self):
+        print()
+        i = 1
+        for row in self.rows:
+            print(f"{i}:", end="")
+            self.draw_row(row)
+            i += 1
+
+    def draw_row(self, row: list):
+        print("".join([str(i) for i in row]))
+
+    def draw_sprite(self, cycle: int, x: int):
+        position = (cycle-1) % 40
+        row = (cycle-1) // 40
+        if x - 1 <= (position+1) <= x + 1:
+            self.rows[row][position] = "#"
+
+
 class Program:
     def __init__(self):
         self.__x = 1
         self.cycles = 0
-        self.end_of_cycle_history = {self.cycles:self.__x}
+        self.end_of_cycle_history = {self.cycles: self.__x}
 
     def process_instruction(self, instruction):
         data = instruction.strip().split()
@@ -37,10 +59,10 @@ class Program:
             total += self.signal_strength_during_cycle(cycle)
         return total
 
-    def x_during_cycle(self, cycle:int) -> int:
-        return self.end_of_cycle_history[cycle-1]
+    def x_during_cycle(self, cycle: int) -> int:
+        return self.end_of_cycle_history[cycle - 1]
 
-    def x_after_cycle(self, cycle:int) -> int:
+    def x_after_cycle(self, cycle: int) -> int:
         return self.end_of_cycle_history[cycle]
 
 
@@ -53,8 +75,16 @@ def solve_part_1(data: list) -> int:
     program.process_instructions(data)
     return program.sum_signal_strength()
 
+
 def solve_part_2(data: list) -> int:
-    pass
+    program = Program()
+    program.process_instructions(data)
+    display = Display()
+    for cycle in range(1, 240):
+        x = program.x_during_cycle(cycle)
+        display.draw_sprite(cycle, x)
+
+    display.draw_rows()
 
 
 if __name__ == "__main__":
