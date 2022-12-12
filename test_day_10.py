@@ -64,7 +64,8 @@ def test_crt_row_1(data_1):
     display = Display()
 
     for cycle in range(1, 240):
-        x = program.x_during_cycle(cycle)
+        # x = program.x_during_cycle(cycle)
+        x = program.x_after_cycle(cycle)
         display.draw_sprite(cycle, x)
 
     display.draw_rows()

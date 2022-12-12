@@ -81,7 +81,8 @@ def solve_part_2(data: list) -> int:
     program.process_instructions(data)
     display = Display()
     for cycle in range(1, 240):
-        x = program.x_during_cycle(cycle)
+        # x = program.x_during_cycle(cycle)
+        x = program.x_after_cycle(cycle)
         display.draw_sprite(cycle, x)
 
     display.draw_rows()
