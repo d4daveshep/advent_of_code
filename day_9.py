@@ -48,6 +48,18 @@ class Point:
             self.store_position()
         return self
 
+    def gap_to(self, other) -> Vector:
+        assert isinstance(other, Point)
+        return Vector(other.x - self.x, other.y - self.y)
+
+    def is_adjacent_to(self, other) -> bool:
+        assert isinstance(other, Point)
+        gap = other.gap_to(self)
+        if abs(gap.x) > 1 or abs(gap.y) > 1:
+            return False
+        else:
+            return True
+
     def store_position(self):
         self.__positions[self.__repr__()] = True
 
@@ -56,9 +68,23 @@ class Point:
 
 
 class Rope:
-    def __init__(self, head: Point, tail: Point):
-        self.head = head
-        self.tail = tail
+    def __init__(self, head: Point = Point(0, 0), tail: Point = Point(0, 0), knots: int = 2):
+        self.num_knots = knots
+        self.knot = []
+        for _ in range(self.num_knots):
+            self.knot.append(Point(0, 0))
+        if head:
+            self.knot[0] = head
+        if tail:
+            self.knot[-1] = tail
+
+    @property
+    def head(self):
+        return self.knot[0]
+
+    @property
+    def tail(self):
+        return self.knot[-1]
 
     def move_head(self, direction: Move):
         self.head.move(direction)
@@ -68,14 +94,10 @@ class Rope:
             self.close_gap()
 
     def gap_tail_to_head(self) -> Vector:
-        return Vector(self.head.x - self.tail.x, self.head.y - self.tail.y)
+        return self.tail.gap_to(self.head)
 
     def tail_is_adjacent_to_head(self) -> bool:
-        gap = self.gap_tail_to_head()
-        if abs(gap.x) > 1 or abs(gap.y) > 1:
-            return False
-        else:
-            return True
+        return self.tail.is_adjacent_to(self.head)
 
     def close_gap(self):
         gap = self.gap_tail_to_head()
@@ -100,11 +122,10 @@ class Rope:
             self.tail.move(Move.UP, store=False)
             self.tail.move(Move.LEFT)
 
-    def do_move(self, dir_num: str):
+    def do_multiple_moves(self, dir_num: str):
         dir, num = dir_num.split()
         for _ in range(int(num)):
             self.move_head(move_map[dir])
-
 
 
 def parse(puzzle_input: str) -> list:
@@ -115,7 +136,7 @@ def solve_part_1(data: list) -> int:
     rope = Rope(head=Point(0, 0), tail=Point(0, 0))
     for line in data:
         line = line.strip()
-        rope.do_move(line)
+        rope.do_multiple_moves(line)
     return rope.tail.count_unique_positions()
 
 

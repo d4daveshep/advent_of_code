@@ -65,9 +65,16 @@ def test_tail_follows_head():
 def test_gap_between_head_and_tail():
     rope = Rope(head=Point(0, 0), tail=Point(0, 0))
     assert rope.gap_tail_to_head() == (0, 0)
+    assert rope.tail.gap_to(rope.head) == Vector(0, 0)
 
     rope = Rope(head=Point(1, 1), tail=Point(0, 0))
     assert rope.gap_tail_to_head() == Vector(1, 1)
+    assert rope.tail.gap_to(rope.head) == Vector(1, 1)
+
+
+def test_gap_between_points():
+    assert Point(0, 0).gap_to(Point(1, 1)) == Vector(1, 1)
+    assert Point(2, 1).gap_to(Point(1, 2)) == Vector(-1, 1)
 
 
 def test_tail_is_adjacent_to_head():
@@ -87,6 +94,16 @@ def test_tail_is_adjacent_to_head():
     assert not rope.tail_is_adjacent_to_head()
 
 
+def test_point_is_adjacent_to_other_point():
+    assert Point(0, 0).is_adjacent_to(Point(0, 0))
+    assert Point(1, 0).is_adjacent_to(Point(0, 0))
+    assert Point(1, 1).is_adjacent_to(Point(0, 0))
+    assert Point(-1, -1).is_adjacent_to(Point(0, 0))
+    assert not Point(2, 0).is_adjacent_to(Point(0, 0))
+    assert not Point(2, 1).is_adjacent_to(Point(0, 0))
+    assert not Point(-2, 1).is_adjacent_to(Point(0, 0))
+
+
 def test_close_gap():
     rope = Rope(head=Point(2, 2), tail=Point(1, 0))
     assert not rope.tail_is_adjacent_to_head()
@@ -99,7 +116,7 @@ def test_data_moves(data):
     rope = Rope(head=Point(0, 0), tail=Point(0, 0))
     for line in data:
         line = line.strip()
-        rope.do_move(line)
+        rope.do_multiple_moves(line)
     assert rope.head == Point(2, 2)
     assert rope.tail == Point(1, 2)
     assert rope.tail.count_unique_positions() == 13
@@ -110,3 +127,10 @@ def test_map_dir_to_move():
     assert move_map["D"] == Move.DOWN
     assert move_map["L"] == Move.LEFT
     assert move_map["R"] == Move.RIGHT
+
+
+def test_10_knot_rope():
+    rope = Rope(knots=10)
+    assert rope.num_knots == 10
+    for i in range(rope.num_knots):
+        assert rope.knot[i] == Point(0,0)
