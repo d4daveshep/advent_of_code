@@ -62,12 +62,32 @@ def test_game():
     game.monkeys[2].starting_items([79, 60, 97])
     game.monkeys[2].inspect = inspect_2
 
-    game.monkeys[1].starting_items([74])
-    game.monkeys[1].inspect = inspect_3
+    game.monkeys[3].starting_items([74])
+    game.monkeys[3].inspect = inspect_3
 
     game.do_round()
+    assert game.monkeys[0].items == deque([20, 23, 27, 26])
+    assert game.monkeys[1].items == deque([2080, 25, 167, 207, 401, 1046])
+    assert game.monkeys[2].items == deque([])
+    assert game.monkeys[3].items == deque([])
 
+    game.do_round()
     assert game.monkeys[0].items == deque([695, 10, 71, 135, 350])
     assert game.monkeys[1].items == deque([43, 49, 58, 55, 362])
     assert game.monkeys[2].items == deque([])
     assert game.monkeys[3].items == deque([])
+
+    for _ in range(18):
+        game.do_round()
+    assert game.monkeys[0].items == deque([10, 12, 14, 26, 34])
+    assert game.monkeys[1].items == deque([245, 93, 53, 199, 115])
+    assert game.monkeys[2].items == deque([])
+    assert game.monkeys[3].items == deque([])
+
+    assert game.monkeys[0].inspection_count == 101
+    assert game.monkeys[1].inspection_count == 95
+    assert game.monkeys[2].inspection_count == 7
+    assert game.monkeys[3].inspection_count == 105
+
+    assert game.monkey_business_score() == 10605
+
