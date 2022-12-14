@@ -2,9 +2,14 @@ from collections import deque
 
 from day_11 import Monkey, KeepAway, do_inspection
 
+WF = 1
+LCM = 96577
+# WF = 3
+
 
 def inspect_0(worry_level: int) -> (int, int):
-    worry_level = (worry_level * 19) // 3
+    worry_level = (worry_level * 19) // WF
+    worry_level = worry_level % LCM
     if worry_level % 23 == 0:
         throw_to = 2
     else:
@@ -13,7 +18,8 @@ def inspect_0(worry_level: int) -> (int, int):
 
 
 def inspect_1(worry_level: int) -> (int, int):
-    worry_level = (worry_level + 6) // 3
+    worry_level = (worry_level + 6) // WF
+    worry_level = worry_level % LCM
     if worry_level % 19 == 0:
         throw_to = 2
     else:
@@ -22,7 +28,8 @@ def inspect_1(worry_level: int) -> (int, int):
 
 
 def inspect_2(worry_level: int) -> (int, int):
-    worry_level = (worry_level * worry_level) // 3
+    worry_level = (worry_level * worry_level) // WF
+    worry_level = worry_level % LCM
     if worry_level % 13 == 0:
         throw_to = 1
     else:
@@ -31,7 +38,8 @@ def inspect_2(worry_level: int) -> (int, int):
 
 
 def inspect_3(worry_level: int) -> (int, int):
-    worry_level = (worry_level + 3) // 3
+    worry_level = (worry_level + 3) // WF
+    worry_level = worry_level % LCM
     if worry_level % 17 == 0:
         throw_to = 0
     else:
@@ -51,7 +59,7 @@ def test_monkey():
     assert new_monkey == 3
 
 
-def test_game():
+def test_game_part_1():
     game = KeepAway(4)
     game.monkeys[0].starting_items([79, 98])
     game.monkeys[0].inspect = inspect_0
@@ -91,3 +99,28 @@ def test_game():
 
     assert game.monkey_business_score() == 10605
 
+def test_game_part_2():
+    game = KeepAway(4)
+    game.monkeys[0].starting_items([79, 98])
+    game.monkeys[0].inspect = inspect_0
+
+    game.monkeys[1].starting_items([54, 65, 75, 74])
+    game.monkeys[1].inspect = inspect_1
+
+    game.monkeys[2].starting_items([79, 60, 97])
+    game.monkeys[2].inspect = inspect_2
+
+    game.monkeys[3].starting_items([74])
+    game.monkeys[3].inspect = inspect_3
+
+    for i in range(10000):
+        # print(f"{i}")
+        game.do_round()
+
+    print(game.monkey_business_score())
+
+
+    assert game.monkey_business_score() == 2713310158
+
+if __name__ == "__main__":
+    test_game_part_2()

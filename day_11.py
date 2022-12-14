@@ -3,9 +3,14 @@ from collections import deque
 
 from aocd.models import Puzzle
 
+LCM = 9699690
+WF = 1
+# WF = 3
+
 
 def inspect_0(worry_level: int) -> (int, int):
-    worry_level = (worry_level * 13) // 3
+    worry_level = (worry_level * 13) // WF
+    worry_level = worry_level % LCM
     if worry_level % 2 == 0:
         throw_to = 5
     else:
@@ -14,7 +19,8 @@ def inspect_0(worry_level: int) -> (int, int):
 
 
 def inspect_1(worry_level: int) -> (int, int):
-    worry_level = (worry_level + 7) // 3
+    worry_level = (worry_level + 7) // WF
+    worry_level = worry_level % LCM
     if worry_level % 13 == 0:
         throw_to = 4
     else:
@@ -23,7 +29,8 @@ def inspect_1(worry_level: int) -> (int, int):
 
 
 def inspect_2(worry_level: int) -> (int, int):
-    worry_level = (worry_level + 2) // 3
+    worry_level = (worry_level + 2) // WF
+    worry_level = worry_level % LCM
     if worry_level % 5 == 0:
         throw_to = 5
     else:
@@ -32,7 +39,8 @@ def inspect_2(worry_level: int) -> (int, int):
 
 
 def inspect_3(worry_level: int) -> (int, int):
-    worry_level = (worry_level * 2) // 3
+    worry_level = (worry_level * 2) // WF
+    worry_level = worry_level % LCM
     if worry_level % 3 == 0:
         throw_to = 6
     else:
@@ -41,7 +49,8 @@ def inspect_3(worry_level: int) -> (int, int):
 
 
 def inspect_4(worry_level: int) -> (int, int):
-    worry_level = (worry_level * worry_level) // 3
+    worry_level = (worry_level * worry_level) // WF
+    worry_level = worry_level % LCM
     if worry_level % 11 == 0:
         throw_to = 7
     else:
@@ -50,7 +59,8 @@ def inspect_4(worry_level: int) -> (int, int):
 
 
 def inspect_5(worry_level: int) -> (int, int):
-    worry_level = (worry_level + 6) // 3
+    worry_level = (worry_level + 6) // WF
+    worry_level = worry_level % LCM
     if worry_level % 17 == 0:
         throw_to = 4
     else:
@@ -59,7 +69,8 @@ def inspect_5(worry_level: int) -> (int, int):
 
 
 def inspect_6(worry_level: int) -> (int, int):
-    worry_level = (worry_level + 1) // 3
+    worry_level = (worry_level + 1) // WF
+    worry_level = worry_level % LCM
     if worry_level % 7 == 0:
         throw_to = 0
     else:
@@ -68,7 +79,8 @@ def inspect_6(worry_level: int) -> (int, int):
 
 
 def inspect_7(worry_level: int) -> (int, int):
-    worry_level = (worry_level + 8) // 3
+    worry_level = (worry_level + 8) // WF
+    worry_level = worry_level % LCM
     if worry_level % 19 == 0:
         throw_to = 6
     else:
@@ -144,7 +156,28 @@ def solve_part_1(data: list) -> int:
 
 
 def solve_part_2(data: list) -> int:
-    pass
+    game = KeepAway(8)
+    game.monkeys[0].starting_items([91, 54, 70, 61, 64, 64, 60, 85])
+    game.monkeys[0].inspect = inspect_0
+    game.monkeys[1].starting_items([82])
+    game.monkeys[1].inspect = inspect_1
+    game.monkeys[2].starting_items([84, 93, 70])
+    game.monkeys[2].inspect = inspect_2
+    game.monkeys[3].starting_items([78, 56, 85, 93])
+    game.monkeys[3].inspect = inspect_3
+    game.monkeys[4].starting_items([64, 57, 81, 95, 52, 71, 58])
+    game.monkeys[4].inspect = inspect_4
+    game.monkeys[5].starting_items([58, 71, 96, 58, 68, 90])
+    game.monkeys[5].inspect = inspect_5
+    game.monkeys[6].starting_items([56, 99, 89, 97, 81])
+    game.monkeys[6].inspect = inspect_6
+    game.monkeys[7].starting_items([68, 72])
+    game.monkeys[7].inspect = inspect_7
+
+    for _ in range(10000):
+        game.do_round()
+    return game.monkey_business_score()
+
 
 if __name__ == "__main__":
     puzzle = Puzzle(year=2022, day=11)
