@@ -1,3 +1,7 @@
+import time
+
+from aocd.models import Puzzle
+
 import networkx as nx
 
 
@@ -76,5 +80,39 @@ def build_graph(tuples_grid: list) -> nx.Graph:
                     r2, c2, height2 = n2
                     if ord(height2) == ord(height1) + 1 or ord(height2) == ord(height1):
                         graph.add_edge(n1, n2)
-
     return graph
+
+
+def parse(puzzle_input: str) -> list:
+    return puzzle_input.split('\n')
+
+
+def solve_part_1(data: list) -> int:
+    grid = build_grid(data)
+    tuples_grid = build_grid_of_tuples(grid)
+    start, end = find_start_end(tuples_grid)
+    graph = build_graph(tuples_grid)
+    path = nx.shortest_path(graph, source=start, target=end)
+    return len(path) - 1
+
+def solve_part_2(data: list) -> int:
+    pass
+
+
+if __name__ == "__main__":
+    puzzle = Puzzle(year=2022, day=12)
+    puzzle_input = puzzle.input_data
+    data = parse(puzzle_input)
+
+    tic = time.perf_counter()
+    part_1_answer = solve_part_1(data)
+    toc = time.perf_counter()
+    print(f"Part 1 answer = {part_1_answer}")
+    print(f"took {(toc - tic) * 1000:0.1f} msec")
+
+    tic = time.perf_counter()
+    part_2_answer = solve_part_2(data)
+    toc = time.perf_counter()
+    print(f"Part 2 answer = {part_2_answer}")
+    print(f"took {(toc - tic) * 1000:0.1f} msec")
+

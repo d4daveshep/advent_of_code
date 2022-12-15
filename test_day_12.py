@@ -38,13 +38,13 @@ def test_build_graph(tuples_grid):
     assert graph.has_node((0, 0, "`"))
     assert graph.has_edge((0, 0, "`"), (0, 1, 'a'))
     assert not graph.has_edge((0, 2, "b"), (0, 3, "q"))
-    edges = nx.edges(graph)
-    print(edges)
-    paths = nx.shortest_path(graph, source=start, target=end)
-    pass
 
 
-
+def test_shortest_path_length(tuples_grid):
+    graph = build_graph(tuples_grid)
+    start, end = find_start_end(tuples_grid)
+    path = nx.shortest_path(graph, source=start, target=end)
+    assert len(path) == 32
 
 def test_find_start_end(tuples_grid):
     start, end = find_start_end(tuples_grid)
