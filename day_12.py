@@ -22,6 +22,23 @@ def build_grid_of_tuples(grid) -> list:
     return grid
 
 
+def find_start_end(tuples_grid) -> tuple:
+    start = None
+    end = None
+    for row_num in range(len(tuples_grid)):
+        for col_num in range(len(tuples_grid[row_num])):
+            tup = tuples_grid[row_num][col_num]
+            r, c, height = tup
+            if height == '`':
+                start = tup
+                continue
+            if height == '{':
+                end = tup
+                continue
+
+    return start, end
+
+
 def get_adjacent_cells(row_col: tuple, tuples_grid: list) -> list:
     row, col = row_col
     max_row = len(tuples_grid) - 1
@@ -57,7 +74,7 @@ def build_graph(tuples_grid: list) -> nx.Graph:
                 else:
                     r1, c1, height1 = n1
                     r2, c2, height2 = n2
-                    if height2 > height1:
+                    if ord(height2) == ord(height1) + 1 or ord(height2) == ord(height1):
                         graph.add_edge(n1, n2)
 
     return graph

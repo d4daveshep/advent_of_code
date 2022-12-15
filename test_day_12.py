@@ -2,7 +2,7 @@ import networkx as nx
 import pytest
 from networkx import nodes
 
-from day_12 import build_grid, build_grid_of_tuples, build_graph, get_adjacent_cells
+from day_12 import build_grid, build_grid_of_tuples, build_graph, get_adjacent_cells, find_start_end
 
 
 @pytest.fixture()
@@ -32,14 +32,24 @@ def test_build_grid(data_1):
 
 def test_build_graph(tuples_grid):
     graph = build_graph(tuples_grid)
+    start, end = find_start_end(tuples_grid)
     assert len(nodes(graph)) == 40
     assert len(graph) == 40
     assert graph.has_node((0, 0, "`"))
     assert graph.has_edge((0, 0, "`"), (0, 1, 'a'))
     assert not graph.has_edge((0, 2, "b"), (0, 3, "q"))
-    path = nx.shortest_path(graph)
+    edges = nx.edges(graph)
+    print(edges)
+    paths = nx.shortest_path(graph, source=start, target=end)
     pass
 
+
+
+
+def test_find_start_end(tuples_grid):
+    start, end = find_start_end(tuples_grid)
+    assert start == (0,0,'`')
+    assert end == (2,5,'{')
 
 def test_nx_graph():
     graph = nx.Graph()
@@ -53,6 +63,7 @@ def test_nx_graph():
 
     graph.add_edge(t1, t2)
     assert graph.has_edge(t1, t2)
+    assert graph.has_edge(t2, t1)
 
     the_nodes = iter(nodes(graph))
     n = next(the_nodes)
