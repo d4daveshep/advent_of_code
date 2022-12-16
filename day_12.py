@@ -39,6 +39,8 @@ def find_start_end(tuples_grid) -> tuple:
             if height == '{':
                 end = tup
                 continue
+            if start and end:
+                break
 
     return start, end
 
@@ -60,7 +62,7 @@ def get_adjacent_cells(row_col: tuple, tuples_grid: list) -> list:
 
 
 def build_graph(tuples_grid: list) -> nx.Graph:
-    graph = nx.Graph()
+    graph = nx.DiGraph()
     # first pass to create the nodes
     for row_num in range(len(tuples_grid)):
         for col_num in range(len(tuples_grid[row_num])):
@@ -78,10 +80,29 @@ def build_graph(tuples_grid: list) -> nx.Graph:
                 else:
                     r1, c1, height1 = n1
                     r2, c2, height2 = n2
-                    if ord(height2) == ord(height1) + 1 or ord(height2) == ord(height1):
+                    # if ord(height2) == ord(height1) + 1 or ord(height2) == ord(height1):
+                    if ord(height1)-1 <= ord(height2) and ord(height2) <= ord(height1)+1:
                         graph.add_edge(n1, n2)
     return graph
+def find_edges(graph, h1, h2) -> list:
+    found_edges = []
+    all_edges = nx.edges(graph)
+    for edge in all_edges:
+        n1, n2 = edge
+        r1, c1, height1 = n1
+        r2, c2, height2 = n2
+        if (h1 == height1 and h2 == height2) or (h1 == height2 and h2 == height1):
+            found_edges.append(edge)
+    return found_edges
 
+def find_nodes(graph, h1)-> list:
+    found_nodes = []
+    all_nodes = nx.nodes(graph)
+    for node in all_nodes:
+        r, c, h = node
+        if h == h1:
+            found_nodes.append(node)
+    return found_nodes
 
 def parse(puzzle_input: str) -> list:
     return puzzle_input.split('\n')
@@ -92,6 +113,17 @@ def solve_part_1(data: list) -> int:
     tuples_grid = build_grid_of_tuples(grid)
     start, end = find_start_end(tuples_grid)
     graph = build_graph(tuples_grid)
+
+    print("edges.......")
+    edges = find_edges(graph, 'm', 'n')
+    print(edges)
+
+    # paths = nx.shortest_path(graph, source=start)
+    # path_lengths = nx.shortest_path_length(graph, source=start)
+    # print(path_lengths)
+
+    pass
+    # paths = nx.shortest_path(graph)
     path = nx.shortest_path(graph, source=start, target=end)
     return len(path) - 1
 
