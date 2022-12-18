@@ -62,7 +62,7 @@ def get_adjacent_cells(row_col: tuple, tuples_grid: list) -> list:
 
 
 def build_graph(tuples_grid: list) -> nx.Graph:
-    graph = nx.DiGraph()
+    graph = nx.Graph()
     # first pass to create the nodes
     for row_num in range(len(tuples_grid)):
         for col_num in range(len(tuples_grid[row_num])):
@@ -114,17 +114,17 @@ def solve_part_1(data: list) -> int:
     start, end = find_start_end(tuples_grid)
     graph = build_graph(tuples_grid)
 
-    print("edges.......")
-    edges = find_edges(graph, 'm', 'n')
-    print(edges)
+    # print("edges.......")
+    # edges = find_edges(graph, 'm', 'n')
+    # print(edges)
 
     # paths = nx.shortest_path(graph, source=start)
     # path_lengths = nx.shortest_path_length(graph, source=start)
     # print(path_lengths)
 
     pass
-    # paths = nx.shortest_path(graph)
-    path = nx.shortest_path(graph, source=start, target=end)
+    paths = nx.shortest_path(graph, source=end)
+    path = nx.shortest_path(graph, source=end, target=start)
     return len(path) - 1
 
 def solve_part_2(data: list) -> int:
