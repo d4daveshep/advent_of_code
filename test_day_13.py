@@ -1,7 +1,6 @@
-from collections import deque
-from itertools import zip_longest
-
 import pytest
+
+from day_13 import parse_data_pairs, compare
 
 
 @pytest.fixture()
@@ -36,20 +35,6 @@ def test_create_list_from_string():
     assert packet_list == [[4, 4], 4, 4, 4]
 
 
-def parse_data_pairs(test_data):
-    data_deque = deque(test_data)
-    data_pairs = []
-    while len(data_deque):
-        left = eval(data_deque.popleft())
-        right = eval(data_deque.popleft())
-        data_pairs.append((left, right))
-        try:
-            blank = data_deque.popleft()
-        except IndexError:
-            pass
-    return data_pairs
-
-
 def test_parse_data_pairs(test_data):
     data_pairs = parse_data_pairs(test_data)
     assert len(data_pairs) == 8
@@ -62,40 +47,6 @@ def data_pairs(test_data):
     return parse_data_pairs(test_data)
 
 
-def compare(left, right) -> int:
-    """
-    Borrowed this solution.  it uses a few things i wouldn't normally use like walrus operator, zip function, ternery statements
-    :param left: int or list or None
-    :param right: int or list or None
-    :return: -1 if left < right, +1 if left > right or 0 if left == right
-    """
-    # left or right could be None from zip_longest
-    if left is None:
-        return -1
-    if right is None:
-        return 1
-
-    if isinstance(left, int) and isinstance(right, int):
-        if left < right:
-            return -1
-        elif left > right:
-            return 1
-        else:
-            return 0
-
-    elif isinstance(left, list) and isinstance(right, list):
-        for l2, r2 in zip_longest(left, right):
-            if (result := compare(l2, r2)) != 0:
-                return result
-        return 0
-
-    else:
-        l2 = [left] if isinstance(left, int) else left
-        r2 = [right] if isinstance(right, int) else right
-        return compare(l2, r2)
-
-
-
 def test_compare(data_pairs):
     print()
     sum_total = 0
@@ -103,7 +54,6 @@ def test_compare(data_pairs):
         left, right = data_pairs[i]
         answer = compare(left, right)
         if answer == -1:
-            sum_total += i+1
+            sum_total += i + 1
 
     print(f"sum_total = {sum_total}")
-
