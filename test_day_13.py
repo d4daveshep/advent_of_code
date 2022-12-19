@@ -1,4 +1,5 @@
 from collections import deque
+from itertools import zip_longest
 
 import pytest
 
@@ -61,66 +62,48 @@ def data_pairs(test_data):
     return parse_data_pairs(test_data)
 
 
-def make_deque(item) -> deque:
-    if isinstance(int, type(item)):
-        return deque(list(item))
-    elif isinstance(list, type(list)):
-        return deque(item)
+def compare(left, right) -> int:
+    """
+    Borrowed this solution.  it uses a few things i wouldn't normally use like walrus operator, zip function, ternery statements
+    :param left: int or list or None
+    :param right: int or list or None
+    :return: -1 if left < right, +1 if left > right or 0 if left == right
+    """
+    # left or right could be None from zip_longest
+    if left is None:
+        return -1
+    if right is None:
+        return 1
+
+    if isinstance(left, int) and isinstance(right, int):
+        if left < right:
+            return -1
+        elif left > right:
+            return 1
+        else:
+            return 0
+
+    elif isinstance(left, list) and isinstance(right, list):
+        for l2, r2 in zip_longest(left, right):
+            if (result := compare(l2, r2)) != 0:
+                return result
+        return 0
+
     else:
-        raise TypeError(f"{item} is not an int or list")
-
-
-def is_order_correct(left_list: list, right_list: list) -> bool:
-    # convert both to deques
-    left_list = make_deque(left_list)
-    right_list = make_deque(right_list)
-
-    while True:
-        try:
-            left_val = left_list.popleft()
-        except IndexError:
-            return True
-
-        try:
-            right_val = right_list.popleft()
-        except IndexError:
-            return False
-
-        if left_val < right_val:
-            return True
-        if left_val > right_val:
-            return False
-
-
-def make_list(item):
-    if isinstance(int, type(item)):
-        return list(item)
-    elif isinstance(list, type(list)):
-        return item
-    else:
-        raise TypeError(f"{item} is not an int or list")
-
-
-def compare(left, right) -> bool:
-    left = make_deque(left)
-    right = make_deque(right)
-
-    try:
-        answer = left<right
-        return answer
-    except TypeError:
-        return compare(left.popleft(), right.popleft())
+        l2 = [left] if isinstance(left, int) else left
+        r2 = [right] if isinstance(right, int) else right
+        return compare(l2, r2)
 
 
 
-def test_compare_left_right_lists(data_pairs):
-    # left, right = data_pairs[0]
-    # assert is_order_correct(left, right)
-
-    # left, right = data_pairs[1]
-    # assert is_order_correct(left, right)
-
+def test_compare(data_pairs):
+    print()
+    sum_total = 0
     for i in range(len(data_pairs)):
         left, right = data_pairs[i]
         answer = compare(left, right)
-        print(f"{i + 1}, {answer}")
+        if answer == -1:
+            sum_total += i+1
+
+    print(f"sum_total = {sum_total}")
+
