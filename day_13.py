@@ -69,6 +69,16 @@ def solve_part_1(data: list) -> int:
 
 
 def solve_part_2(data: list) -> int:
+    '''
+    Strategy to solve is as follows
+    read the data into a list ignoring blank rows and original ordering
+    Add the additional packets [2] and [6]
+    TODO Use the compare function as the key= from part 1 as the sorting algorithm
+    then find the location of where [2] nad [6] are.
+    Add them together to get the answer
+    :param data:
+    :return:
+    '''
     pass
 
 
