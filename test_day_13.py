@@ -1,6 +1,8 @@
+from functools import cmp_to_key
+
 import pytest
 
-from day_13 import parse_data_pairs, compare
+from day_13 import parse_data_pairs, compare, parse_data
 
 
 @pytest.fixture()
@@ -57,3 +59,19 @@ def test_compare(data_pairs):
             sum_total += i + 1
 
     print(f"sum_total = {sum_total}")
+
+
+
+def test_parse_data(test_data):
+    data = parse_data(test_data)
+    assert len(data) == 16
+
+def test_sort_data(test_data):
+    data = parse_data(test_data)
+
+    sorted_data = sorted(data, key=cmp_to_key(compare))
+    assert sorted_data[0] == []
+    assert sorted_data[-1] == [9]
+
+
+

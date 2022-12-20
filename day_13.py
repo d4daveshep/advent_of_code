@@ -1,6 +1,7 @@
 # alternate solution for Day 12 using my own Graph structure
 import time
 from collections import deque
+from functools import cmp_to_key
 from itertools import zip_longest
 
 from aocd.models import Puzzle
@@ -18,6 +19,13 @@ def parse_data_pairs(test_data):
         except IndexError:
             pass
     return data_pairs
+
+def parse_data(raw_data):
+    parsed_data = []
+    for line in raw_data:
+        if len(line.strip()):
+            parsed_data.append(eval(line))
+    return parsed_data
 
 
 def compare(left, right) -> int:
@@ -79,7 +87,14 @@ def solve_part_2(data: list) -> int:
     :param data:
     :return:
     '''
-    pass
+    data = parse_data(data)
+    data.append([[2]])
+    data.append([[6]])
+    sorted_data = sorted(data, key=cmp_to_key(compare))
+    index_2 = sorted_data.index([[2]]) + 1
+    index_6 = sorted_data.index([[6]]) + 1
+
+    return index_2 * index_6
 
 
 if __name__ == "__main__":
