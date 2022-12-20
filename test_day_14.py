@@ -1,6 +1,6 @@
 import pytest
 
-from day_14 import parse_data_to_tuples_list, find_dimensions
+from day_14 import parse_data_to_tuples_list, find_dimensions, Cave, AIR
 
 
 @pytest.fixture()
@@ -24,3 +24,7 @@ def test_find_dimensions(tuples_list):
     min, max = find_dimensions(tuples_list)
     assert min == (494,4)
     assert max == (503,9)
+
+def test_create_cave():
+    cave = Cave()
+    assert cave[500][5] == AIR

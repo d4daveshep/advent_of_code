@@ -7,7 +7,14 @@ from operator import itemgetter
 
 from aocd.models import Puzzle
 
+AIR = "."
+ROCK = "#"
+SAND = "o"
 
+class Cave:
+    def __getitem__(self, y):
+        if y not in self.space:
+            self.space[y] =
 
 def parse_data_to_tuples_list(test_data):
     return [[eval(t) for t in line.split(" -> ")] for line in test_data]
