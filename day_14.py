@@ -3,6 +3,7 @@ import time
 from collections import deque
 from functools import cmp_to_key
 from itertools import zip_longest
+from operator import itemgetter
 
 from aocd.models import Puzzle
 
@@ -12,13 +13,28 @@ def parse_data_to_tuples_list(test_data):
     return [[eval(t) for t in line.split(" -> ")] for line in test_data]
 
 
+def find_dimensions(tuples_list):
+    min_x = min_y = None
+    max_x = max_y = None
+    for line in tuples_list:
+        min_x = min(line, key=itemgetter(0))
+        min_y = min(line, key=itemgetter(1))
+        max_x = max(line, key=itemgetter(0))
+        max_y = max(line, key=itemgetter(1))
+
+    return ((min_x[0], min_y[1]), (max_x[0], max_y[1]))
+
+
 
 def parse(puzzle_input: str) -> list:
     return puzzle_input.split('\n')
 
 
 def solve_part_1(data: list) -> int:
-    pass
+    tuples_list = parse_data_to_tuples_list(data)
+    min, max = find_dimensions(tuples_list)
+    print(f"min={min}, max={max}")
+    return 0
 
 def solve_part_2(data: list) -> int:
     pass
