@@ -1,6 +1,6 @@
 import pytest
 
-from day_14 import parse_data_to_tuples_list, find_dimensions, Cave, AIR, ROCK
+from day_14 import parse_data_to_tuples_list, find_dimensions, Cave, AIR, ROCK, SAND
 
 
 @pytest.fixture()
@@ -42,4 +42,21 @@ def test_add_cave_walls(tuples_list):
 
     cave.print_shape()
 
+@pytest.fixture()
+def cave(tuples_list):
+    cave = Cave()
+    cave.add_walls(tuples_list)
+    return cave
+
+
+def test_top_solid(cave):
+    assert cave.top_solid(498) == 4
+    assert cave.top_solid(500) == 9
+    assert cave.top_solid(502) == 4
+    assert cave.top_solid(1) is None
+
+def test_add_sand(cave):
+    cave.add_sand()
+    assert cave[500][8] == SAND
+    assert cave.top_solid(500) == 8
 

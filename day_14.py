@@ -11,12 +11,12 @@ SAND = "o"
 
 class Cave:
     def __init__(self):
-        self.space = {}
+        self.__space = {}
 
     def __getitem__(self, y) -> list:
-        if y not in self.space:
-            self.space[y] = [AIR for i in range(160)]
-        return self.space[y]
+        if y not in self.__space:
+            self.__space[y] = [AIR for i in range(160)]
+        return self.__space[y]
 
     def add_walls(self, tuples_list: list):
         for row in tuples_list:
@@ -31,26 +31,39 @@ class Cave:
 
         if x1 == x2:  # vertical
             for y in range(min([y1, y2]), max([y1, y2]) + 1):
-                self.add_point(x1, y)
+                self.add_material(x1, y, ROCK)
 
         elif y1 == y2:  # horizontal
             for x in range(min([x1, x2]), max([x1, x2]) + 1):
-                self.add_point(x, y1)
+                self.add_material(x, y1, ROCK)
 
-    def add_point(self, x, y):
+    def add_material(self, x, y, material:str):
         # print(f"adding {x},{y}")
-        self[x][y] = ROCK
+        self[x][y] = material
+
+    def add_sand(self, col=500):
+        pass
+
 
     def print_shape(self):
         print()
-        for key in sorted(self.space.keys()):
+        for key in sorted(self.__space.keys()):
             print(f"{key}:",end="")
-            for y in self.space[key]:
+            for y in self[key]:
                 print(f"{y}",end="")
             print()
 
-        pass
+    def top_solid(self, col:int) -> int:
+        try:
+            rock_index = self[col].index(ROCK)
+        except ValueError:
+            return None
+        try:
+            sand_index = self[col].index(SAND)
+        except ValueError:
+            return rock_index
 
+        return min([rock_index, sand_index])
 
 def parse_data_to_tuples_list(test_data):
     return [[eval(t) for t in line.split(" -> ")] for line in test_data]
