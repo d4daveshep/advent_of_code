@@ -9,27 +9,30 @@ def test_data():
         data = data_file.readlines()
     return data
 
+
 @pytest.fixture()
 def tuples_list(test_data):
     return parse_data_to_tuples_list(test_data)
 
+
 def test_parse_data(test_data):
     tuples_list = parse_data_to_tuples_list(test_data)
     assert len(tuples_list) == 2
-    assert [(498,4),(498,6),(496,6)] in tuples_list
-
+    assert [(498, 4), (498, 6), (496, 6)] in tuples_list
 
 
 def test_find_dimensions(tuples_list):
     min, max = find_dimensions(tuples_list)
-    assert min == (494,4)
-    assert max == (503,9)
+    assert min == (494, 4)
+    assert max == (503, 9)
+
 
 def test_create_cave():
     cave = Cave()
     assert cave[500][5] == AIR
     cave[500][5] = ROCK
     assert cave[500][5] == ROCK
+
 
 def test_add_cave_walls(tuples_list):
     cave = Cave()
@@ -41,6 +44,7 @@ def test_add_cave_walls(tuples_list):
     assert cave[496][6] == ROCK
 
     cave.print_shape()
+
 
 @pytest.fixture()
 def cave(tuples_list):
@@ -55,8 +59,31 @@ def test_top_solid(cave):
     assert cave.top_solid(502) == 4
     assert cave.top_solid(1) is None
 
+
+def test_cant_overwrite_rock(cave):
+    assert cave[498][4] == ROCK
+    with pytest.raises(Exception):
+        cave.add_material(498, 4, SAND)
+
+    with pytest.raises(Exception):
+        cave.add_material(498, 4, AIR)
+
+
 def test_add_sand(cave):
     cave.add_sand()
     assert cave[500][8] == SAND
     assert cave.top_solid(500) == 8
 
+    cave.add_sand()
+    assert cave[499][8] == SAND
+
+    cave.add_sand()
+    assert cave[501][8] == SAND
+
+    cave.add_sand()
+    assert cave[500][7] == SAND
+
+    cave.add_sand()
+    assert cave[498][8] == SAND
+
+    cave.print_shape()

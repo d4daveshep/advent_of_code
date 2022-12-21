@@ -1,6 +1,5 @@
 # alternate solution for Day 12 using my own Graph structure
 import time
-from operator import itemgetter
 
 from aocd.models import Puzzle
 
@@ -37,23 +36,36 @@ class Cave:
             for x in range(min([x1, x2]), max([x1, x2]) + 1):
                 self.add_material(x, y1, ROCK)
 
-    def add_material(self, x, y, material:str):
+    def add_material(self, x, y, material: str):
         # print(f"adding {x},{y}")
+        if material is not ROCK and self[x][y] == ROCK:
+            raise Exception(f"Can't add {material} over ROCK")
         self[x][y] = material
 
     def add_sand(self, col=500):
-        pass
+        top = self.top_solid(col)
+        top_left = self.top_solid(col - 1)
+        top_right = self.top_solid(col + 1)
 
+        if top_left == top and top == top_right:
+            # Sand at rest
+            self.add_material(col, top - 1, SAND)
+
+        elif top_left > top:
+            self.add_material(col - 1, top_left - 1, SAND)
+
+        elif top_right > top:
+            self.add_material(col + 1, top_right - 1, SAND)
 
     def print_shape(self):
         print()
         for key in sorted(self.__space.keys()):
-            print(f"{key}:",end="")
+            print(f"{key}:", end="")
             for y in self[key]:
-                print(f"{y}",end="")
+                print(f"{y}", end="")
             print()
 
-    def top_solid(self, col:int) -> int:
+    def top_solid(self, col: int) -> int:
         try:
             rock_index = self[col].index(ROCK)
         except ValueError:
@@ -65,6 +77,7 @@ class Cave:
 
         return min([rock_index, sand_index])
 
+
 def parse_data_to_tuples_list(test_data):
     return [[eval(t) for t in line.split(" -> ")] for line in test_data]
 
@@ -73,11 +86,11 @@ def find_dimensions(tuples_list):
     min_x = min_y = 1000
     max_x = max_y = 0
     for line in tuples_list:
-        for x,y in line:
-            min_x = min([min_x,x])
-            min_y = min([min_y,y])
-            max_x = max([max_x,x])
-            max_y = max([max_y,y])
+        for x, y in line:
+            min_x = min([min_x, x])
+            min_y = min([min_y, y])
+            max_x = max([max_x, x])
+            max_y = max([max_y, y])
 
     return ((min_x, min_y), (max_x, max_y))
 
