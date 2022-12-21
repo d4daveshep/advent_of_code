@@ -40,4 +40,6 @@ def test_add_cave_walls(tuples_list):
     assert cave[497][6] == ROCK
     assert cave[496][6] == ROCK
 
+    cave.print_shape()
+
 
