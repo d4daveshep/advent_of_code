@@ -1,6 +1,6 @@
 import pytest
 
-from day_14 import parse_data_to_tuples_list, find_dimensions, Cave, AIR
+from day_14 import parse_data_to_tuples_list, find_dimensions, Cave, AIR, ROCK
 
 
 @pytest.fixture()
@@ -28,3 +28,16 @@ def test_find_dimensions(tuples_list):
 def test_create_cave():
     cave = Cave()
     assert cave[500][5] == AIR
+    cave[500][5] = ROCK
+    assert cave[500][5] == ROCK
+
+def test_add_cave_walls(tuples_list):
+    cave = Cave()
+    cave.add_walls(tuples_list)
+    assert cave[498][4] == ROCK
+    assert cave[498][5] == ROCK
+    assert cave[498][6] == ROCK
+    assert cave[497][6] == ROCK
+    assert cave[496][6] == ROCK
+
+

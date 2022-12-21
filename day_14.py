@@ -12,9 +12,30 @@ ROCK = "#"
 SAND = "o"
 
 class Cave:
-    def __getitem__(self, y):
+    def __init__(self):
+        self.space = {}
+
+    def __getitem__(self, y) -> list:
         if y not in self.space:
-            self.space[y] =
+            self.space[y] = [AIR for i in range(30)]
+        return self.space[y]
+
+    def add_walls(self, tuples_list:list):
+        for row in tuples_list:
+            for i in range(len(row)-1):
+                start = row[i]
+                end = row[i+1]
+                self.add_wall(start, end)
+
+    def add_wall(self, start:tuple, end:tuple):
+        x1,y1 = start
+        x2,y2 = end
+        x_dir = x2 - x1 // abs(x2-x1)
+        y_dir = y2 - y1 // abs(y2-y1)
+        for x in range(x1,x2+1,x_dir):
+
+
+
 
 def parse_data_to_tuples_list(test_data):
     return [[eval(t) for t in line.split(" -> ")] for line in test_data]
