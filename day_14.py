@@ -9,6 +9,10 @@ ROCK = "#"
 SAND = "o"
 
 
+class CaveIsFull(Exception):
+    pass
+
+
 class Cave:
     def __init__(self):
         self.__space = {}
@@ -49,13 +53,13 @@ class Cave:
         level_right = self.top_solid(col + 1,level)
 
         if level_left is None:
-            return # Done
+            raise CaveIsFull
         elif level_left > level:
             # cascade Left
             self.add_sand(col-1, level)
 
         elif level_right is None:
-            return # Done
+            raise CaveIsFull
         elif level_right > level:
             # cascade Right
             self.add_sand(col+1, level)
@@ -64,6 +68,13 @@ class Cave:
         elif level_left <= level and level >= level_right:
             # Sand at Rest
             self.add_material(col, level - 1, SAND)
+
+    def fill_with_sand(self, col=500):
+        try:
+            while True:
+                self.add_sand(col)
+        except CaveIsFull:
+            return
 
 
     def count_sand(self) -> int:
@@ -122,9 +133,10 @@ def solve_part_1(data: list) -> int:
 
     cave = Cave()
     cave.add_walls(tuples_list)
-    cave.print_shape()
+    cave.fill_with_sand()
+    return cave.count_sand()
 
-    return 0
+    # return 0
 
 
 def solve_part_2(data: list) -> int:

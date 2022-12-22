@@ -135,5 +135,8 @@ def test_add_sand(cave):
 
     assert cave.count_sand() == 24
 
+def test_add_sand_until_full(cave):
+    cave.fill_with_sand(col=500)
+    assert cave.count_sand() == 24
 
 
