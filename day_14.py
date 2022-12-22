@@ -52,6 +52,9 @@ class Cave:
         level_left = self.top_solid(col - 1,level)
         level_right = self.top_solid(col + 1,level)
 
+        if level == 0:
+            raise CaveIsFull
+
         if level_left is None:
             raise CaveIsFull
         elif level_left > level:
@@ -140,7 +143,13 @@ def solve_part_1(data: list) -> int:
 
 
 def solve_part_2(data: list) -> int:
-    pass
+    tuples_list = parse_data_to_tuples_list(data)
+    cave = Cave()
+    cave.add_walls(tuples_list)
+    cave.add_wall((250,159),(750,159))
+    cave.fill_with_sand()
+    return cave.count_sand()
+
 
 
 if __name__ == "__main__":
