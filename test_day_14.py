@@ -70,20 +70,70 @@ def test_cant_overwrite_rock(cave):
 
 
 def test_add_sand(cave):
+    cave.print_shape()
+
     cave.add_sand()
+    # cave.print_shape()
     assert cave[500][8] == SAND
     assert cave.top_solid(500) == 8
 
     cave.add_sand()
+    # cave.print_shape()
     assert cave[499][8] == SAND
 
     cave.add_sand()
+    # cave.print_shape()
     assert cave[501][8] == SAND
 
     cave.add_sand()
+    # cave.print_shape()
     assert cave[500][7] == SAND
 
     cave.add_sand()
+    # cave.print_shape()
     assert cave[498][8] == SAND
 
+    cave.add_sand()
+    # cave.print_shape()
+    assert cave[499][7] == SAND
+
+    cave.add_sand()
+    # cave.print_shape()
+    assert cave[501][7] == SAND
+
+    cave.add_sand()
+    # cave.print_shape()
+    assert cave[500][6] == SAND
+
+    cave.add_sand()
+    # cave.print_shape()
+    assert cave[497][8] == SAND
+
+    cave.add_sand()
+    # cave.print_shape()
+    assert cave[498][7] == SAND
+
+    cave.add_sand()
+    # cave.print_shape()
+    assert cave[499][6] == SAND
+
+    cave.add_sand()
+    # cave.print_shape()
+    assert cave[501][6] == SAND
+
+    for _ in range(10):
+        cave.add_sand()
+    # cave.print_shape()
+
+    cave.add_sand()
+    # cave.print_shape()
+    assert cave[497][5] == SAND
+
+    cave.add_sand()
     cave.print_shape()
+    assert cave[495][8] == SAND
+
+    assert cave.count_sand() == 24
+
+
+

@@ -1,5 +1,6 @@
 # alternate solution for Day 12 using my own Graph structure
 import time
+from collections import Counter
 
 from aocd.models import Puzzle
 
@@ -42,20 +43,35 @@ class Cave:
             raise Exception(f"Can't add {material} over ROCK")
         self[x][y] = material
 
-    def add_sand(self, col=500):
-        top = self.top_solid(col)
-        top_left = self.top_solid(col - 1)
-        top_right = self.top_solid(col + 1)
+    def add_sand(self, col=500, start_level=0):
+        level = self.top_solid(col, start_level)
+        level_left = self.top_solid(col - 1,level)
+        level_right = self.top_solid(col + 1,level)
 
-        if top_left == top and top == top_right:
-            # Sand at rest
-            self.add_material(col, top - 1, SAND)
+        if level_left is None:
+            return # Done
+        elif level_left > level:
+            # cascade Left
+            self.add_sand(col-1, level)
 
-        elif top_left > top:
-            self.add_material(col - 1, top_left - 1, SAND)
+        elif level_right is None:
+            return # Done
+        elif level_right > level:
+            # cascade Right
+            self.add_sand(col+1, level)
+            # self.add_material(col + 1, level_right - 1, SAND)
 
-        elif top_right > top:
-            self.add_material(col + 1, top_right - 1, SAND)
+        elif level_left <= level and level >= level_right:
+            # Sand at Rest
+            self.add_material(col, level - 1, SAND)
+
+
+    def count_sand(self) -> int:
+        sand_count = 0
+        for y in self.__space.keys():
+            counter = Counter(self[y])
+            sand_count += counter[SAND]
+        return sand_count
 
     def print_shape(self):
         print()
@@ -65,13 +81,13 @@ class Cave:
                 print(f"{y}", end="")
             print()
 
-    def top_solid(self, col: int) -> int:
+    def top_solid(self, col: int, level=0) -> int:
         try:
-            rock_index = self[col].index(ROCK)
+            rock_index = self[col].index(ROCK, level)
         except ValueError:
             return None
         try:
-            sand_index = self[col].index(SAND)
+            sand_index = self[col].index(SAND, level)
         except ValueError:
             return rock_index
 
