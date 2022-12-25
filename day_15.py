@@ -57,10 +57,19 @@ class BeaconExclusionZone:
         if y_diff > self.rl_distance:
             return set()
 
-        x_min = self.sensor.x - (self.rl_distance - y_diff)
-        x_max = self.sensor.x + (self.rl_distance - y_diff)
+        x_min, x_max = self.x_min_max(y)
         x_set = {x for x in range(x_min, x_max + 1)}
         return x_set
+
+    def x_min_max(self, y:int) -> tuple:
+        y_diff = abs(self.sensor.y - y)
+        if y_diff > self.rl_distance:
+            return None
+
+        x_min = self.sensor.x - (self.rl_distance - y_diff)
+        x_max = self.sensor.x + (self.rl_distance - y_diff)
+        return x_min, x_max
+
 
 
 def rl_dist(sensor: Coord, beacon: Coord) -> int:
@@ -89,7 +98,16 @@ def solve_part_1(data: list) -> int:
 
 
 def solve_part_2(data: list) -> int:
-    return 0
+    all_x = set()
+    beacons = Beacons()
+    for input_line in data:
+        # print(f"parsing line...{input_line}")
+        line = parse_input_line(input_line.strip())
+        beacons.add_beacon(line.beacon)
+        bxz = BeaconExclusionZone(line.sensor, line.beacon)
+        all_x.update(bxz.x_set(2000000))
+        # all_x.difference_update(beacons.get_beacon_x_set(2000000))
+
 
 
 if __name__ == "__main__":
