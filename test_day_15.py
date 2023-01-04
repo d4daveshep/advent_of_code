@@ -73,6 +73,7 @@ def test_x_min_max(line_8_7):
 
 
 def test_part_2(test_data):
+    assert False
     bxzs = []
     for input_line in test_data:
         line = parse_input_line(input_line)
@@ -141,15 +142,50 @@ def test_adding_overlapping_ranges():
 
 
 
-def test_range_list():
+def test_rangeset_len_min_max():
     range_set = RangeSet()
-    range_set.add_range(Range(2,4))
+    range_set.add_range(Range(6,10))
     assert len(range_set) == 1
-    assert range_set.min() == 2
-    assert range_set.max() == 4
+    assert range_set.min() == 6
+    assert range_set.max() == 10
 
-    range_set.add_range(Range(3,5))
-    assert len(range_set) == 1
-    assert range_set.min == 2
-    assert range_set.max == 5
+    range_set.add_range(Range(2,4))
+    assert len(range_set) == 2
+    assert range_set.min() == 2
+    assert range_set.max() == 10
+
+def test_rangeset_sorting():
+    range_set = RangeSet()
+    r610 = Range(6,10)
+    r24 = Range(2,4)
+    r55 = Range(5,5)
+
+    range_set.add_range(r610)
+    range_set.add_range(r24)
+
+    assert range_set.ranges[0] == r24
+    assert range_set.ranges[1] == r610
+
+    range_set.add_range(r55)
+
+    assert range_set.ranges[0] == r24
+    assert range_set.ranges[1] == r55
+    assert range_set.ranges[2] == r610
+
+def test_range_condensing():
+    range_set = RangeSet()
+    r610 = Range(6,10)
+    r24 = Range(2,4)
+    r35 = Range(3,5)
+    r79 = Range(7,9)
+
+    range_set.add_range(r24)
+    range_set.add_range(r610)
+    range_set.add_range(r35)
+
+    assert len(range_set) == 2
+    assert range_set.ranges[0] == Range(2,5)
+    assert range_set.ranges[1] == r610
+
+
 

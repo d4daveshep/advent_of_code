@@ -1,10 +1,8 @@
 import time
-from collections import Counter
-
-from aocd.models import Puzzle
 from typing import NamedTuple
 
 import parse
+from aocd.models import Puzzle
 
 
 class NoOverlap(Exception):
@@ -12,7 +10,7 @@ class NoOverlap(Exception):
 
 
 class Range:
-    def __init__(self, start:int, end:int):
+    def __init__(self, start: int, end: int):
         self.start = start
         self.end = end
         if self.end < self.start:
@@ -34,7 +32,9 @@ class Range:
             return Range(min(self.start, other.start), max(self.end, other.end))
 
     def overlap(self, other) -> bool:
-        if (self.start <= other.start and other.start <= self.end) or (self.start <= other.end and other.end <= self.end) or(self.start >= other.start and self.end <= other.end):
+        if (self.start <= other.start and other.start <= self.end) or (
+                self.start <= other.end and other.end <= self.end) or (
+                self.start >= other.start and self.end <= other.end):
             return True
         else:
             return False
@@ -46,9 +46,9 @@ class RangeSet():
     def __repr__(self):
         return f"RangeSet({[repr(r) for r in self.ranges]})"
 
-
     def add_range(self, range):
         self.ranges.append(range)
+        self.ranges.sort(key=lambda r: r.start)
         self.__condense()
 
     def __len__(self):
@@ -61,7 +61,10 @@ class RangeSet():
         return max([r.end for r in self.ranges])
 
     def __condense(self):
-        # for r in self.ranges:
+        for i in range(len(self.ranges)-1):
+            if self.ranges[i].overlap(self.ranges[i+1]):
+                self.ranges[i] = self.ranges[i] + self.ranges[i+1]
+                del self.ranges[i+1]
 
         pass
 
@@ -124,7 +127,7 @@ class BeaconExclusionZone:
         x_set = {x for x in range(x_min, x_max + 1)}
         return x_set
 
-    def x_min_max(self, y:int) -> tuple:
+    def x_min_max(self, y: int) -> tuple:
         y_diff = abs(self.sensor.y - y)
         if y_diff > self.rl_distance:
             return None
@@ -134,12 +137,10 @@ class BeaconExclusionZone:
         return x_min, x_max
 
 
-
 def rl_dist(sensor: Coord, beacon: Coord) -> int:
     xs, ys = sensor
     xb, yb = beacon
     return abs(sensor.y - beacon.y) + abs(sensor.x - beacon.x)
-
 
 
 def parse_data(puzzle_input: str) -> list:
@@ -170,7 +171,6 @@ def solve_part_2(data: list) -> int:
         bxz = BeaconExclusionZone(line.sensor, line.beacon)
         all_x.update(bxz.x_set(2000000))
         # all_x.difference_update(beacons.get_beacon_x_set(2000000))
-
 
 
 if __name__ == "__main__":
