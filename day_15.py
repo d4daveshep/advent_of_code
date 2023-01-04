@@ -73,6 +73,8 @@ class RangeSet():
             new_RS.append(new_range)
         new_RS.sort(key=lambda r: r.start)
 
+        condense_ranges(new_RS)
+
         self.ranges = new_RS
 
 class Coord(NamedTuple):
@@ -116,6 +118,9 @@ class BeaconExclusionZone:
         self.sensor = sensor
         self.beacon = beacon
         self.rl_distance = rl_dist(self.sensor, self.beacon)
+
+    def __repr__(self):
+        return f"BeaconExclusionZone(sensor={self.sensor}, beacon={self.beacon})"
 
     def x_width(self, y: int) -> int:
         y_diff = abs(self.sensor.y - y)

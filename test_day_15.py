@@ -79,16 +79,19 @@ def test_part_2(test_data):
         line = parse_input_line(input_line)
         bxzs.append(BeaconExclusionZone(line.sensor, line.beacon))
 
-    for y in range(0,21):
-        pass
+    range_sets = {}
 
-    # for each y value in scope
-        # create a RangeSet
-        # store in dict using y as the key
-        # for each bxz
-            # get the x min, max for the current y
-            # add as a range to the range set for current y
+    for y in range(0, 21):
 
+        range_set = RangeSet()
+        range_sets[y] = range_set
+
+        for bxz in bxzs:
+            x_tup = bxz.x_min_max(y)
+            if x_tup is not None:
+                range_set.add_range(Range(x_tup[0], x_tup[1]))
+
+    pass
     # find range sets with len of 2 (i.e. a single gap)
     # calculate the tuning frequency of this y value
 
@@ -126,6 +129,11 @@ def test_range_start_end_reversed():
     assert not r3.overlap(r1)
     assert r3.overlap(r4)
     assert r4.overlap(r3)
+
+    r5 = Range(12,14)
+    r6 = Range(-8,12)
+    assert r5.overlap(r6)
+    assert r6.overlap(r5)
 
 
 def test_range_equality():
@@ -216,6 +224,18 @@ def test_range_condensing_2():
     assert len(range_set) == 1
     assert range_set.min() == 1
     assert range_set.max() == 10
+
+def test_range_adding_condension_3():
+    range_set = RangeSet()
+    range_set.add_range(Range(12,14))
+    range_set.add_range(Range(6,10))
+    range_set.add_range(Range(-8,12))
+
+    assert len(range_set) == 1
+    assert range_set.min() == -8
+    assert range_set.max() == 14
+
+
 
 
 
