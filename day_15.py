@@ -32,6 +32,10 @@ class Beacons:
             return self.b_dict[y]
 
 
+def tuning_frequency(beacon: Coord) -> int:
+    return beacon.x * 4000000 + beacon.y
+
+
 def parse_input_line(line: str) -> InputLine:
     result = parse.search("Sensor at x={x_s:d}, y={y_s:d}: closest beacon is at x={x_b:d}, y={y_b:d}", line)
     sensor = Coord(result.named["x_s"], result.named["y_s"])

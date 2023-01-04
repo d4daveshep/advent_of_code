@@ -3,7 +3,7 @@ from typing import NamedTuple
 import parse
 import pytest
 
-from day_15 import rl_dist, BeaconExclusionZone, Coord, parse_input_line, Beacons, InputLine
+from day_15 import rl_dist, BeaconExclusionZone, Coord, parse_input_line, Beacons, InputLine, tuning_frequency
 
 
 @pytest.fixture()
@@ -64,3 +64,7 @@ def test_all_x_sets(test_data):
         all_x.difference_update(beacons.get_beacon_x_set(10))
 
     assert len(all_x) == 26
+
+def test_tuning_frequency():
+    beacon = Coord(x=14,y=11)
+    assert tuning_frequency(beacon) == 56000011
