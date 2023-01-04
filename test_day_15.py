@@ -73,7 +73,7 @@ def test_x_min_max(line_8_7):
 
 
 def test_part_2(test_data):
-    assert False
+    # build list of beacon exclusion zones
     bxzs = []
     for input_line in test_data:
         line = parse_input_line(input_line)
@@ -81,6 +81,16 @@ def test_part_2(test_data):
 
     for y in range(0,21):
         pass
+
+    # for each y value in scope
+        # create a RangeSet
+        # store in dict using y as the key
+        # for each bxz
+            # get the x min, max for the current y
+            # add as a range to the range set for current y
+
+    # find range sets with len of 2 (i.e. a single gap)
+    # calculate the tuning frequency of this y value
 
 
 
@@ -172,7 +182,7 @@ def test_rangeset_sorting():
     assert range_set.ranges[1] == r55
     assert range_set.ranges[2] == r610
 
-def test_range_condensing():
+def test_range_condensing_1():
     range_set = RangeSet()
     r610 = Range(6,10)
     r24 = Range(2,4)
@@ -186,6 +196,27 @@ def test_range_condensing():
     assert len(range_set) == 2
     assert range_set.ranges[0] == Range(2,5)
     assert range_set.ranges[1] == r610
+
+    range_set.add_range(r79)
+
+    assert len(range_set) == 2
+    assert range_set.ranges[0] == Range(2,5)
+    assert range_set.ranges[1] == r610
+
+def test_range_condensing_2():
+    range_set = RangeSet()
+
+    range_set.add_range(Range(1,10))
+    range_set.add_range(Range(1,2))
+    range_set.add_range(Range(3,4))
+    range_set.add_range(Range(5,6))
+    range_set.add_range(Range(7,8))
+    range_set.add_range(Range(9,10))
+
+    assert len(range_set) == 1
+    assert range_set.min() == 1
+    assert range_set.max() == 10
+
 
 
 

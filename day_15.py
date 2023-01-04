@@ -46,10 +46,9 @@ class RangeSet():
     def __repr__(self):
         return f"RangeSet({[repr(r) for r in self.ranges]})"
 
-    def add_range(self, range):
-        self.ranges.append(range)
-        self.ranges.sort(key=lambda r: r.start)
-        self.__condense()
+    # def add_range(self, range):
+    #     self.ranges.append(range)
+    #     self.ranges.sort(key=lambda r: r.start)
 
     def __len__(self):
         return len(self.ranges)
@@ -60,14 +59,21 @@ class RangeSet():
     def max(self):
         return max([r.end for r in self.ranges])
 
-    def __condense(self):
-        for i in range(len(self.ranges)-1):
-            if self.ranges[i].overlap(self.ranges[i+1]):
-                self.ranges[i] = self.ranges[i] + self.ranges[i+1]
-                del self.ranges[i+1]
 
-        pass
+    def add_range(self, new_range: Range):
+        new_RS = []
+        added = False
+        for r in self.ranges:
+            if r.overlap(new_range):
+                new_RS.append(r+new_range)
+                added = True
+            else:
+                new_RS.append(r)
+        if not added:
+            new_RS.append(new_range)
+        new_RS.sort(key=lambda r: r.start)
 
+        self.ranges = new_RS
 
 class Coord(NamedTuple):
     x: int
