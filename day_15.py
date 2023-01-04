@@ -18,8 +18,14 @@ class Range:
         if self.end < self.start:
             self.start, self.end = self.end, self.start
 
+    def __repr__(self):
+        return f"Range({self.start},{self.end})"
+
     def __eq__(self, other):
         return self.start == other.start and self.end == other.end
+
+    def __hash__(self):
+        return hash((self.start, self.end))
 
     def __add__(self, other):
         if not self.overlap(other):
@@ -32,6 +38,32 @@ class Range:
             return True
         else:
             return False
+
+
+class RangeSet():
+    ranges = []
+
+    def __repr__(self):
+        return f"RangeSet({[repr(r) for r in self.ranges]})"
+
+
+    def add_range(self, range):
+        self.ranges.append(range)
+        self.__condense()
+
+    def __len__(self):
+        return len(self.ranges)
+
+    def min(self):
+        return min([r.start for r in self.ranges])
+
+    def max(self):
+        return max([r.end for r in self.ranges])
+
+    def __condense(self):
+        # for r in self.ranges:
+
+        pass
 
 
 class Coord(NamedTuple):

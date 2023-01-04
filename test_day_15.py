@@ -1,10 +1,8 @@
-from typing import NamedTuple
-
 import parse
 import pytest
 
 from day_15 import rl_dist, BeaconExclusionZone, Coord, parse_input_line, Beacons, InputLine, tuning_frequency, Range, \
-    NoOverlap
+    NoOverlap, RangeSet
 
 
 @pytest.fixture()
@@ -66,18 +64,36 @@ def test_all_x_sets(test_data):
 
     assert len(all_x) == 26
 
+def test_x_min_max(line_8_7):
+    bxz = BeaconExclusionZone(line_8_7.sensor, line_8_7.beacon)
+    assert bxz.x_min_max(7) == (-1, 17)
+    assert bxz.x_min_max(6) == (0,16)
+    assert bxz.x_min_max(-2) == (8,8)
+    assert bxz.x_min_max(-3) is None
+
+
+def test_part_2(test_data):
+    bxzs = []
+    for input_line in test_data:
+        line = parse_input_line(input_line)
+        bxzs.append(BeaconExclusionZone(line.sensor, line.beacon))
+
+    for y in range(0,21):
+        pass
+
+
+
+
 def test_tuning_frequency():
-    beacon = Coord(x=14,y=11)
+    beacon = Coord(x=14, y=11)
     assert tuning_frequency(beacon) == 56000011
 
 
-
-
 def test_range_overlap():
-    r1 = Range(2,4)
-    r2 = Range(3,5)
-    r3 = Range(6,10)
-    r4 = Range(7,9)
+    r1 = Range(2, 4)
+    r2 = Range(3, 5)
+    r3 = Range(6, 10)
+    r4 = Range(7, 9)
 
     assert r1.overlap(r2)
     assert r2.overlap(r1)
@@ -86,11 +102,12 @@ def test_range_overlap():
     assert r3.overlap(r4)
     assert r4.overlap(r3)
 
+
 def test_range_start_end_reversed():
     r1 = Range(4, 2)
-    r2 = Range(3,5)
+    r2 = Range(3, 5)
     r3 = Range(10, 6)
-    r4 = Range(7,9)
+    r4 = Range(7, 9)
 
     assert r1.overlap(r2)
     assert r2.overlap(r1)
@@ -101,25 +118,38 @@ def test_range_start_end_reversed():
 
 
 def test_range_equality():
-    r1 = Range(2,4)
-    r2 = Range(2,4)
-    r3 = Range(4,2)
+    r1 = Range(2, 4)
+    r2 = Range(2, 4)
+    r3 = Range(4, 2)
     assert r1 == r2
     assert r2 == r3
-    r4 = Range(3,4)
+    r4 = Range(3, 4)
     assert r3 != r4
 
-def test_adding_overlapping_ranges():
-    r1 = Range(2,4)
-    r2 = Range(3,5)
-    r3 = Range(6,10)
-    r4 = Range(7,9)
 
-    assert r1 + r2 == Range(2,5)
+def test_adding_overlapping_ranges():
+    r1 = Range(2, 4)
+    r2 = Range(3, 5)
+    r3 = Range(6, 10)
+    r4 = Range(7, 9)
+
+    assert r1 + r2 == Range(2, 5)
     assert r3 + r4 == r3
     with pytest.raises(NoOverlap):
         r0 = r1 + r3
 
 
 
+
+def test_range_list():
+    range_set = RangeSet()
+    range_set.add_range(Range(2,4))
+    assert len(range_set) == 1
+    assert range_set.min() == 2
+    assert range_set.max() == 4
+
+    range_set.add_range(Range(3,5))
+    assert len(range_set) == 1
+    assert range_set.min == 2
+    assert range_set.max == 5
 
