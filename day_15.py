@@ -6,6 +6,19 @@ from typing import NamedTuple
 
 import parse
 
+class Range:
+    def __init__(self, start:int, end:int):
+        self.start = start
+        self.end = end
+        if self.end < self.start:
+            self.start, self.end = self.end, self.start
+
+    def overlap(self, other) -> bool:
+        if (self.start <= other.start and other.start <= self.end) or (self.start <= other.end and other.end <= self.end) or(self.start >= other.start and self.end <= other.end):
+            return True
+        else:
+            return False
+
 
 class Coord(NamedTuple):
     x: int
