@@ -6,12 +6,26 @@ from typing import NamedTuple
 
 import parse
 
+
+class NoOverlap(Exception):
+    pass
+
+
 class Range:
     def __init__(self, start:int, end:int):
         self.start = start
         self.end = end
         if self.end < self.start:
             self.start, self.end = self.end, self.start
+
+    def __eq__(self, other):
+        return self.start == other.start and self.end == other.end
+
+    def __add__(self, other):
+        if not self.overlap(other):
+            raise NoOverlap
+        else:
+            return Range(min(self.start, other.start), max(self.end, other.end))
 
     def overlap(self, other) -> bool:
         if (self.start <= other.start and other.start <= self.end) or (self.start <= other.end and other.end <= self.end) or(self.start >= other.start and self.end <= other.end):

@@ -3,7 +3,8 @@ from typing import NamedTuple
 import parse
 import pytest
 
-from day_15 import rl_dist, BeaconExclusionZone, Coord, parse_input_line, Beacons, InputLine, tuning_frequency, Range
+from day_15 import rl_dist, BeaconExclusionZone, Coord, parse_input_line, Beacons, InputLine, tuning_frequency, Range, \
+    NoOverlap
 
 
 @pytest.fixture()
@@ -97,5 +98,28 @@ def test_range_start_end_reversed():
     assert not r3.overlap(r1)
     assert r3.overlap(r4)
     assert r4.overlap(r3)
+
+
+def test_range_equality():
+    r1 = Range(2,4)
+    r2 = Range(2,4)
+    r3 = Range(4,2)
+    assert r1 == r2
+    assert r2 == r3
+    r4 = Range(3,4)
+    assert r3 != r4
+
+def test_adding_overlapping_ranges():
+    r1 = Range(2,4)
+    r2 = Range(3,5)
+    r3 = Range(6,10)
+    r4 = Range(7,9)
+
+    assert r1 + r2 == Range(2,5)
+    assert r3 + r4 == r3
+    with pytest.raises(NoOverlap):
+        r0 = r1 + r3
+
+
 
 
