@@ -40,6 +40,19 @@ class Range:
             return False
 
 
+def condense_ranges(ranges:list) -> list:
+    if len(ranges) < 2:
+        return ranges
+    i=0
+    while i < len(ranges)-1:
+        r1 = ranges[i]
+        r2 = ranges[i+1]
+        if r1.overlap(r2):
+            ranges[i] = r1 + r2
+            del ranges[i+1]
+        i += 1
+    return ranges
+
 class RangeSet():
     ranges = []
 
@@ -73,9 +86,13 @@ class RangeSet():
             new_RS.append(new_range)
         new_RS.sort(key=lambda r: r.start)
 
-        condense_ranges(new_RS)
+        # new_RS = condense_ranges(new_RS)
 
         self.ranges = new_RS
+
+    def condense(self):
+        self.ranges = condense_ranges(self.ranges)
+
 
 class Coord(NamedTuple):
     x: int

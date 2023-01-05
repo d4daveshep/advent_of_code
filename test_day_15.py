@@ -2,7 +2,7 @@ import parse
 import pytest
 
 from day_15 import rl_dist, BeaconExclusionZone, Coord, parse_input_line, Beacons, InputLine, tuning_frequency, Range, \
-    NoOverlap, RangeSet
+    NoOverlap, RangeSet, condense_ranges
 
 
 @pytest.fixture()
@@ -90,6 +90,7 @@ def test_part_2(test_data):
             x_tup = bxz.x_min_max(y)
             if x_tup is not None:
                 range_set.add_range(Range(x_tup[0], x_tup[1]))
+        range_set.condense()
 
     pass
     # find range sets with len of 2 (i.e. a single gap)
@@ -230,6 +231,22 @@ def test_range_adding_condension_3():
     range_set.add_range(Range(12,14))
     range_set.add_range(Range(6,10))
     range_set.add_range(Range(-8,12))
+
+    assert len(range_set) == 1
+    assert range_set.min() == -8
+    assert range_set.max() == 14
+
+def test_condense_ranges():
+    range_set = RangeSet()
+    range_set.add_range(Range(12,14))
+
+    range_set.condense()
+
+    range_set.add_range(Range(6,10))
+    range_set.condense()
+
+    range_set.add_range(Range(-8,12))
+    range_set.condense()
 
     assert len(range_set) == 1
     assert range_set.min() == -8
