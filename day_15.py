@@ -32,26 +32,27 @@ class Range:
             return Range(min(self.start, other.start), max(self.end, other.end))
 
     def overlap(self, other) -> bool:
-        if (self.start <= other.start and other.start <= self.end) or (
-                self.start <= other.end and other.end <= self.end) or (
+        if (self.start <= other.start and other.start-1 <= self.end) or (
+                self.start-1 <= other.end and other.end <= self.end) or (
                 self.start >= other.start and self.end <= other.end):
             return True
         else:
             return False
 
 
-def condense_ranges(ranges:list) -> list:
+def condense_ranges(ranges: list) -> list:
     if len(ranges) < 2:
         return ranges
-    i=0
-    while i < len(ranges)-1:
+    i = 0
+    while i < len(ranges) - 1:
         r1 = ranges[i]
-        r2 = ranges[i+1]
+        r2 = ranges[i + 1]
         if r1.overlap(r2):
             ranges[i] = r1 + r2
-            del ranges[i+1]
+            del ranges[i + 1]
         i += 1
     return ranges
+
 
 class RangeSet():
     ranges = []
@@ -72,13 +73,12 @@ class RangeSet():
     def max(self):
         return max([r.end for r in self.ranges])
 
-
     def add_range(self, new_range: Range):
         new_RS = []
         added = False
         for r in self.ranges:
             if r.overlap(new_range):
-                new_RS.append(r+new_range)
+                new_RS.append(r + new_range)
                 added = True
             else:
                 new_RS.append(r)
@@ -86,12 +86,17 @@ class RangeSet():
             new_RS.append(new_range)
         new_RS.sort(key=lambda r: r.start)
 
-        # new_RS = condense_ranges(new_RS)
-
         self.ranges = new_RS
+        self.condense()
 
     def condense(self):
         self.ranges = condense_ranges(self.ranges)
+
+    def gaps(self)->list:
+        gaps = []
+        for i in range(len(self.ranges)-1):
+            pass
+
 
 
 class Coord(NamedTuple):
@@ -160,15 +165,40 @@ class BeaconExclusionZone:
         if y_diff > self.rl_distance:
             return None
 
-        x_min = self.sensor.x - (self.rl_distance - y_diff)
-        x_max = self.sensor.x + (self.rl_distance - y_diff)
+        x_min = max(0, self.sensor.x - (self.rl_distance - y_diff))
+        x_max = min(4000000, self.sensor.x + (self.rl_distance - y_diff))
         return x_min, x_max
+
+    def y_min_max(self) -> tuple:
+        y_min = max(0, self.sensor.y - self.rl_distance)
+        y_max = min(4000000, self.sensor.y + self.rl_distance)
+        return y_min, y_max
 
 
 def rl_dist(sensor: Coord, beacon: Coord) -> int:
     xs, ys = sensor
     xb, yb = beacon
     return abs(sensor.y - beacon.y) + abs(sensor.x - beacon.x)
+
+
+def build_bxzs(data: list) -> list:
+    bxzs = []
+    for input_line in data:
+        line = parse_input_line(input_line)
+        bxzs.append(BeaconExclusionZone(line.sensor, line.beacon))
+    print(f"created {len(bxzs)} BeaconExclusionZones")
+    return bxzs
+
+
+def get_range_set(bxzs: list, y: int) -> RangeSet:
+    range_set = RangeSet()
+    for bxz in bxzs:
+        x_width = bxz.x_width(y)
+        x_tup = bxz.x_min_max(y)
+        if x_tup is not None:
+            range_set.add_range(Range(x_tup[0], x_tup[1]))
+    range_set.condense()
+    return range_set
 
 
 def parse_data(puzzle_input: str) -> list:
@@ -190,15 +220,27 @@ def solve_part_1(data: list) -> int:
 
 
 def solve_part_2(data: list) -> int:
-    all_x = set()
-    beacons = Beacons()
-    for input_line in data:
-        # print(f"parsing line...{input_line}")
-        line = parse_input_line(input_line.strip())
-        beacons.add_beacon(line.beacon)
-        bxz = BeaconExclusionZone(line.sensor, line.beacon)
-        all_x.update(bxz.x_set(2000000))
-        # all_x.difference_update(beacons.get_beacon_x_set(2000000))
+    # build list of beacon exclusion zones
+    bxzs = build_bxzs(data)
+
+    range_sets = {}
+
+    for y in range(0, 4000001):
+        # print(f"processing y = {y}")
+        range_set = get_range_set(bxzs, y)
+        range_sets[y] = range_set
+
+    # find range sets with len of 2 (i.e. a single gap)
+    range_gaps = {k: v for k, v in range_sets.items() if len(v) > 1}
+    print(f"lines with gaps... {range_gaps}")
+
+    y = list(range_gaps.keys())[0]
+    x = list(range_gaps.values())[0]
+
+    beacon = Coord(x,y)
+    return tuning_frequency(beacon)
+
+
 
 
 if __name__ == "__main__":
