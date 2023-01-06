@@ -116,7 +116,6 @@ def test_part_2_another_way(test_data):
     #     gaps = range_set.gaps()
     #
 
-
     print(f"lines with gaps... {range_gaps}")
 
     pass
@@ -214,7 +213,7 @@ def test_rangeset_sorting():
 
     range_set.add_range(r55)
 
-    assert range_set.ranges[0] == Range(2,10)
+    assert range_set.ranges[0] == Range(2, 10)
 
 
 def test_range_condensing_1():

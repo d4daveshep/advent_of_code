@@ -32,8 +32,8 @@ class Range:
             return Range(min(self.start, other.start), max(self.end, other.end))
 
     def overlap(self, other) -> bool:
-        if (self.start <= other.start and other.start-1 <= self.end) or (
-                self.start-1 <= other.end and other.end <= self.end) or (
+        if (self.start <= other.start and other.start - 1 <= self.end) or (
+                self.start - 1 <= other.end and other.end <= self.end) or (
                 self.start >= other.start and self.end <= other.end):
             return True
         else:
@@ -92,11 +92,10 @@ class RangeSet():
     def condense(self):
         self.ranges = condense_ranges(self.ranges)
 
-    def gaps(self)->list:
+    def gaps(self) -> list:
         gaps = []
-        for i in range(len(self.ranges)-1):
+        for i in range(len(self.ranges) - 1):
             pass
-
 
 
 class Coord(NamedTuple):
@@ -226,21 +225,19 @@ def solve_part_2(data: list) -> int:
     range_sets = {}
 
     for y in range(0, 4000001):
+        # for y in range(2900000, 2910000):
         # print(f"processing y = {y}")
         range_set = get_range_set(bxzs, y)
         range_sets[y] = range_set
 
     # find range sets with len of 2 (i.e. a single gap)
     range_gaps = {k: v for k, v in range_sets.items() if len(v) > 1}
-    print(f"lines with gaps... {range_gaps}")
+    # print(f"lines with gaps... {range_gaps}")
 
-    y = list(range_gaps.keys())[0]
-    x = list(range_gaps.values())[0]
-
-    beacon = Coord(x,y)
-    return tuning_frequency(beacon)
-
-
+    for y, range_set in range_gaps.items():
+        x = range_set.ranges[0].end + 1
+        beacon = Coord(x, y)
+        print(f"tuning frequency={tuning_frequency(beacon)}")
 
 
 if __name__ == "__main__":
