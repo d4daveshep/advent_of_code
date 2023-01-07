@@ -3,21 +3,11 @@ import pytest
 
 from day_16 import parse_input_line
 
-
-def test_parse_input_line_1():
-    line = "Valve AA has flow rate=0; tunnels lead to valves DD, II, BB"
-    result = parse.search("Valve {valve_label} has flow rate={flow:d}; tunnels lead to valves {to_valves:D}", line)
-    assert result.named["valve_label"] == "AA"
-    assert result.named["flow"] == 0
-    assert result.named["to_valves"] == "DD, II, BB"
-
-    line = "Valve HH has flow rate=22; tunnel leads to valve GG"
-    result = parse.search("Valve {valve_label} has flow rate={flow:d}; tunnel leads to valve {to_valves:D}", line)
-    assert result.named["valve_label"] == "HH"
-    assert result.named["flow"] == 22
-    assert result.named["to_valves"] == "GG"
-
-
+@pytest.fixture()
+def test_data():
+    with open("./day_16_test_data.txt") as data_file:
+        data = data_file.readlines()
+    return data
 
 def test_parse_input_line():
     line1 = "Valve AA has flow rate=0; tunnels lead to valves DD, II, BB"
@@ -32,3 +22,10 @@ def test_parse_input_line():
     assert valve_HH.name == "HH"
     assert valve_HH.flow == 22
     assert valve_HH.neighbours == ["GG"]
+
+
+
+def test_parse_test_data(test_data):
+    valves = parse_data(test_data)
+    valves = [parse_input_line(line) for line in test_data]
+    assert len(valves) == 10
