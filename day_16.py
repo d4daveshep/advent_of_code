@@ -1,8 +1,12 @@
+from itertools import permutations
+
+import networkx as nx
 import parse
+from networkx import Graph
 
 
 class Valve:
-    def __init__(self, name=None, flow=0, neighbours=[] ):
+    def __init__(self, name=None, flow=0, neighbours=[]):
         self.neighbours = neighbours
         self.flow = flow
         self.name = name
@@ -10,15 +14,19 @@ class Valve:
     def __repr__(self):
         return f"Valve(name={self.name}, flow={self.flow}, neighbours={self.neighbours})"
 
+
 class ParseError(Exception):
     pass
+
 
 def parse_input_line(line: str) -> Valve:
     valve = Valve()
     if "tunnels" in line:
-        result = parse.search("Valve {valve_name} has flow rate={flow:d}; tunnels lead to valves {to_valves:D}", line.strip())
+        result = parse.search("Valve {valve_name} has flow rate={flow:d}; tunnels lead to valves {to_valves:D}",
+                              line.strip())
     elif "tunnel" in line:
-        result = parse.search("Valve {valve_name} has flow rate={flow:d}; tunnel leads to valve {to_valves:D}", line.strip())
+        result = parse.search("Valve {valve_name} has flow rate={flow:d}; tunnel leads to valve {to_valves:D}",
+                              line.strip())
     else:
         raise ParseError(line)
 
@@ -27,6 +35,22 @@ def parse_input_line(line: str) -> Valve:
     valve.neighbours = result.named["to_valves"].split(", ")
     return valve
 
-def parse_data(test_data:list)->list:
+
+def parse_data(data: list) -> dict:
+    return {valve.name: valve for valve in [parse_input_line(line) for line in data]}
 
 
+def build_graph(valves: dict) -> Graph:
+    graph = nx.Graph()
+    for valve in valves.values():
+        for neighbour in valve.neighbours:
+            graph.add_edge(valve.name, neighbour)
+    return graph
+
+
+def get_flow_valve_names(valves):
+    return [v.name for v in filter(lambda v: v.flow > 0, valves.values())]
+
+
+def get_flow_valve_permutations(flow_valve_names):
+    return list(permutations(flow_valve_names, len(flow_valve_names)))
