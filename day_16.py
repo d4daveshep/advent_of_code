@@ -1,7 +1,9 @@
+import time
 from itertools import permutations
 
 import networkx as nx
 import parse
+from aocd.models import Puzzle
 from networkx import Graph
 
 
@@ -55,19 +57,54 @@ def get_flow_valve_names(valves):
 def get_flow_valve_permutations(flow_valve_names):
     return list(permutations(flow_valve_names, len(flow_valve_names)))
 
-def calc_total_flow(perm: tuple, valves:dict, graph:Graph) -> int:
 
+def calc_total_flow(perm: tuple, valves: dict, graph: Graph) -> int:
     mins_remaining = 30
     start = "AA"
     total_flow_relieved = 0
 
     for end in perm:
         path_length = nx.shortest_path_length(graph, start, end)
-        mins_remaining -= (path_length+1)
+        mins_remaining -= (path_length + 1)
         total_flow_relieved += valves[end].flow * mins_remaining
         start = end
 
     return total_flow_relieved
 
 
+def parse_raw_data(puzzle_input: str) -> list:
+    return puzzle_input.split('\n')
 
+
+def solve_part_1(data: list) -> int:
+    valves = parse_data(data)
+    graph = build_graph(valves)
+    perms = get_flow_valve_permutations(get_flow_valve_names(valves))
+
+    max_flow_relieved = 0
+    for perm in perms:
+        max_flow_relieved = max([max_flow_relieved, calc_total_flow(perm, valves, graph)])
+
+    return max_flow_relieved
+
+
+def solve_part_2(data: list) -> int:
+    pass
+
+
+if __name__ == "__main__":
+    puzzle = Puzzle(year=2022, day=16)
+    puzzle_input = puzzle.input_data
+    data = parse_raw_data(puzzle_input)
+
+    tic = time.perf_counter()
+    part_1_answer = solve_part_1(data)
+    toc = time.perf_counter()
+    print(f"Part 1 answer = {part_1_answer}")
+    print(f"took {(toc - tic) * 1000:0.1f} msec")
+
+    tic = time.perf_counter()
+    part_2_answer = solve_part_2(data)
+    toc = time.perf_counter()
+    print(f"Part 2 answer = {part_2_answer}")
+    print(f"took {(toc - tic) * 1000:0.1f} msec")
