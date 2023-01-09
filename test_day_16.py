@@ -1,3 +1,5 @@
+from itertools import permutations
+
 import networkx as nx
 import pytest
 
@@ -44,8 +46,9 @@ def test_permutations_of_flow_valves(test_data):
     valves = parse_data(test_data)
     flow_valve_names = get_flow_valve_names(valves)
     assert len(flow_valve_names) == 6
-    perms = get_flow_valve_permutations(flow_valve_names)
-    assert len(perms) == 720
+    # perms = get_flow_valve_permutations(flow_valve_names)
+    perms = permutations(flow_valve_names, len(flow_valve_names))
+    assert len(list(perms)) == 720
 
 
 
@@ -59,7 +62,9 @@ def test_total_flow_relieved(test_data):
 def test_find_max_flow_relieved(test_data):
     valves = parse_data(test_data)
     graph = build_graph(valves)
-    perms = get_flow_valve_permutations(get_flow_valve_names(valves))
+    # perms = get_flow_valve_permutations(get_flow_valve_names(valves))
+    flow_valve_names = get_flow_valve_names(valves)
+    perms = permutations(flow_valve_names, len(flow_valve_names))
 
     max_flow_relieved = 0
     for perm in perms:

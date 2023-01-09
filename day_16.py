@@ -1,3 +1,4 @@
+import functools
 import time
 from itertools import permutations
 
@@ -58,14 +59,20 @@ def get_flow_valve_permutations(flow_valve_names):
     return list(permutations(flow_valve_names, len(flow_valve_names)))
 
 
+@functools.cache
+def get_shortest_path_length(graph: Graph, start:str, end:str)-> int:
+    return nx.shortest_path_length(graph, start, end)
+
 def calc_total_flow(perm: tuple, valves: dict, graph: Graph) -> int:
     mins_remaining = 30
     start = "AA"
     total_flow_relieved = 0
 
     for end in perm:
-        path_length = nx.shortest_path_length(graph, start, end)
+        path_length = get_shortest_path_length(graph, start, end)
         mins_remaining -= (path_length + 1)
+        if mins_remaining<0:
+            break
         total_flow_relieved += valves[end].flow * mins_remaining
         start = end
 
@@ -79,10 +86,18 @@ def parse_raw_data(puzzle_input: str) -> list:
 def solve_part_1(data: list) -> int:
     valves = parse_data(data)
     graph = build_graph(valves)
-    perms = get_flow_valve_permutations(get_flow_valve_names(valves))
+    # perms = get_flow_valve_permutations(get_flow_valve_names(valves))
+    flow_valve_names = get_flow_valve_names(valves)
+    perms = permutations(flow_valve_names, len(flow_valve_names))
 
     max_flow_relieved = 0
+    counter = 0
     for perm in perms:
+        counter += 1
+        # if counter > 10e7:
+        #     break
+        if counter % 1000000 == 0:
+            print(f"\rperm# {counter}, max flow = {max_flow_relieved}", end="")
         max_flow_relieved = max([max_flow_relieved, calc_total_flow(perm, valves, graph)])
 
     return max_flow_relieved
@@ -100,7 +115,7 @@ if __name__ == "__main__":
     tic = time.perf_counter()
     part_1_answer = solve_part_1(data)
     toc = time.perf_counter()
-    print(f"Part 1 answer = {part_1_answer}")
+    print(f"\nPart 1 answer = {part_1_answer}")
     print(f"took {(toc - tic) * 1000:0.1f} msec")
 
     tic = time.perf_counter()
