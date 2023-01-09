@@ -1,7 +1,8 @@
 import networkx as nx
 import pytest
 
-from day_16 import parse_input_line, parse_data, build_graph, get_flow_valve_names, get_flow_valve_permutations
+from day_16 import parse_input_line, parse_data, build_graph, get_flow_valve_names, get_flow_valve_permutations, \
+    calc_total_flow
 
 
 @pytest.fixture()
@@ -45,3 +46,23 @@ def test_permutations_of_flow_valves(test_data):
     assert len(flow_valve_names) == 6
     perms = get_flow_valve_permutations(flow_valve_names)
     assert len(perms) == 720
+
+
+
+def test_total_flow_relieved(test_data):
+    valves = parse_data(test_data)
+    graph = build_graph(valves)
+    perm = ("DD", "BB", "JJ", "HH", "EE", "CC")
+
+    assert calc_total_flow(perm, valves, graph) == 1651
+
+def test_find_max_flow_relieved(test_data):
+    valves = parse_data(test_data)
+    graph = build_graph(valves)
+    perms = get_flow_valve_permutations(get_flow_valve_names(valves))
+
+    max_flow_relieved = 0
+    for perm in perms:
+        max_flow_relieved = max([max_flow_relieved, calc_total_flow(perm, valves, graph)])
+
+    assert max_flow_relieved == 1651

@@ -54,3 +54,20 @@ def get_flow_valve_names(valves):
 
 def get_flow_valve_permutations(flow_valve_names):
     return list(permutations(flow_valve_names, len(flow_valve_names)))
+
+def calc_total_flow(perm: tuple, valves:dict, graph:Graph) -> int:
+
+    mins_remaining = 30
+    start = "AA"
+    total_flow_relieved = 0
+
+    for end in perm:
+        path_length = nx.shortest_path_length(graph, start, end)
+        mins_remaining -= (path_length+1)
+        total_flow_relieved += valves[end].flow * mins_remaining
+        start = end
+
+    return total_flow_relieved
+
+
+
