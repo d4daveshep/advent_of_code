@@ -2,10 +2,18 @@ from itertools import permutations
 
 import networkx as nx
 import pytest
+from aocd.models import Puzzle
 
 from day_16 import parse_input_line, parse_data, build_graph, get_flow_valve_names, get_flow_valve_permutations, \
-    calc_total_flow
+    calc_total_flow, parse_raw_data
 
+
+@pytest.fixture()
+def part_1_data():
+    puzzle = Puzzle(year=2022, day=16)
+    puzzle_input = puzzle.input_data
+    data = parse_raw_data(puzzle_input)
+    return data
 
 @pytest.fixture()
 def test_data():
@@ -62,7 +70,6 @@ def test_total_flow_relieved(test_data):
 def test_find_max_flow_relieved(test_data):
     valves = parse_data(test_data)
     graph = build_graph(valves)
-    # perms = get_flow_valve_permutations(get_flow_valve_names(valves))
     flow_valve_names = get_flow_valve_names(valves)
     perms = permutations(flow_valve_names, len(flow_valve_names))
 
@@ -71,3 +78,54 @@ def test_find_max_flow_relieved(test_data):
         max_flow_relieved = max([max_flow_relieved, calc_total_flow(perm, valves, graph)])
 
     assert max_flow_relieved == 1651
+
+
+def get_flow_by_distance(start, flow_valve_names, graph, valves )-> dict:
+    pass
+
+
+def test_all_pairs_shortest_path(test_data):
+    valves = parse_data(test_data)
+    graph = build_graph(valves)
+    flow_valve_names = get_flow_valve_names(valves)
+
+    paths = dict(nx.all_pairs_shortest_path(graph))
+    lengths = dict(nx.all_pairs_shortest_path_length(graph))
+
+    start = "AA"
+    time_remaining = 30
+    flow_by_distance = {}
+    for end, dist in lengths["AA"].items():
+        if valves[end].flow > 0:
+            flow_by_distance[end] = valves[end].flow * (time_remaining - dist - 1)
+
+    start = "JJ"
+    time_remaining = 27
+    flow_by_distance = {}
+    for end, dist in lengths[start].items():
+        if valves[end].flow > 0:
+            flow_by_distance[end] = valves[end].flow * (time_remaining - dist - 1)
+
+    start = "DD"
+    time_remaining = 28
+    flow_by_distance = {}
+    for end, dist in lengths[start].items():
+        if valves[end].flow > 0:
+            flow_by_distance[end] = valves[end].flow * (time_remaining - dist - 1)
+
+    pass
+
+
+
+
+def test_part_1_data(part_1_data):
+    valves = parse_data(part_1_data)
+    graph = build_graph(valves)
+    flow_valve_names = get_flow_valve_names(valves)
+
+    paths = dict(nx.all_pairs_shortest_path(graph))
+    lengths = dict(nx.all_pairs_shortest_path_length(graph))
+
+
+
+    pass
