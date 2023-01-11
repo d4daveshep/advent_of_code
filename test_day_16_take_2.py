@@ -127,6 +127,7 @@ class ValveNetwork:
             # Remove the element, reset the position (available),
             permutation.pop()
             positions[i] = False
+            pass
 
     def get_max_flow(self) -> int:
         pass
